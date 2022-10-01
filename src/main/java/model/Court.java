@@ -75,7 +75,10 @@ public class Court {
                 if (racketB + racketSize > height) racketB = height - racketSize;
                 break;
         }
-        if (updateBall(deltaT)) reset();
+        if (updateBall(deltaT)) {
+            System.out.println(playerA.getScore() + " : " + playerB.getScore());
+            reset();
+        }
     }
 
 
@@ -96,8 +99,10 @@ public class Court {
             ballSpeedX = -ballSpeedX;
             nextBallX = ballX + deltaT * ballSpeedX;
         } else if (nextBallX < 0) {
+            playerB.incrementScore();
             return true;
         } else if (nextBallX > width) {
+            playerA.incrementScore();
             return true;
         }
         ballX = nextBallX;

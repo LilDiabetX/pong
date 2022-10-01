@@ -15,11 +15,13 @@ public class App extends Application {
         var gameScene = new Scene(root);
         class Player implements RacketController {
             State state = State.IDLE;
-
+            private int score = 0;
             @Override
-            public State getState() {
-                return state;
-            }
+            public State getState() { return state; }
+            @Override
+            public int getScore() { return score; }
+            @Override
+            public void incrementScore() { score++; }
         }
         var playerA = new Player();
         var playerB = new Player();

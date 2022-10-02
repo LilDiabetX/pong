@@ -3,7 +3,7 @@ package gui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.Court;
 import model.RacketController;
@@ -11,7 +11,7 @@ import model.RacketController;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
-        var root = new Pane();
+        var root = new StackPane();
         var gameScene = new Scene(root);
         class Player implements RacketController {
             State state = State.IDLE;

@@ -1,6 +1,9 @@
 package model;
 
 public class Court {
+
+    Sound sound = new Sound();
+
     // instance parameters
     private final RacketController playerA, playerB;
     private final double width, height; // m
@@ -21,6 +24,11 @@ public class Court {
         reset();
     }
 
+    public void playSE(int i){
+        this.sound.setFile(i);
+        this.sound.play();
+    }
+   
     public double getWidth() {
         return width;
     }
@@ -90,14 +98,19 @@ public class Court {
         if (nextBallY < 0 || nextBallY > height) {
             ballSpeedY = -ballSpeedY;
             nextBallY = ballY + deltaT * ballSpeedY;
+            playSE(1);
         }
         if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)
                 || (nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
+            playSE(1);
             ballSpeedX = -ballSpeedX;
             nextBallX = ballX + deltaT * ballSpeedX;
+
         } else if (nextBallX < 0) {
+            playSE(0);
             return true;
         } else if (nextBallX > width) {
+            playSE(0);
             return true;
         }
         ballX = nextBallX;

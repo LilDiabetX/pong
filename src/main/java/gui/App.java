@@ -1,6 +1,5 @@
 package gui;
 
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -61,4 +60,6 @@ public class App extends Application {
         primaryStage.show();
         gameView.animate();
     }
+
+
 }

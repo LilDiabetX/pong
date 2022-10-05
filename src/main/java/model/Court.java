@@ -100,10 +100,13 @@ public class Court {
             nextBallY = ballY + deltaT * ballSpeedY;
             playSFX(1);
         }
-        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)
-                || (nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
-            playSFX(1);
-            ballSpeedX = -ballSpeedX;
+        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)) {
+            ballSpeedX = -ballSpeedX + 20;
+            ballSpeedY = ballSpeedY + 20;
+            nextBallX = ballX + deltaT * ballSpeedX;
+        } else if ((nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
+            ballSpeedX = -ballSpeedX - 20;
+            ballSpeedY = ballSpeedY + 20;
             nextBallX = ballX + deltaT * ballSpeedX;
 
         } else if (nextBallX < 0) {
@@ -125,8 +128,8 @@ public class Court {
     void reset() {
         this.racketA = height / 2;
         this.racketB = height / 2;
-        this.ballSpeedX = 200.0;
-        this.ballSpeedY = 200.0;
+        this.ballSpeedX = 275.0;
+        this.ballSpeedY = 275.0;
         this.ballX = width / 2;
         this.ballY = height / 2;
     }

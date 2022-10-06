@@ -16,6 +16,8 @@ public class Court {
     private double ballX, ballY; // m
     private double ballSpeedX, ballSpeedY; // m
 
+    private int scoreA, scoreB;
+
     public Court(RacketController playerA, RacketController playerB, double width, double height) {
         this.playerA = playerA;
         this.playerB = playerB;
@@ -57,6 +59,10 @@ public class Court {
         return ballY;
     }
 
+    public int getScoreA() { return scoreA; }
+
+    public int getScoreB() { return scoreB; }
+
     public void update(double deltaT) {
 
         switch (playerA.getState()) {
@@ -83,7 +89,11 @@ public class Court {
                 if (racketB + racketSize > height) racketB = height - racketSize;
                 break;
         }
-        if (updateBall(deltaT)) reset();
+        if (updateBall(deltaT)) {
+            scoreA = playerA.getScore();
+            scoreB = playerB.getScore();
+            reset();
+        }
     }
 
 
@@ -112,9 +122,11 @@ public class Court {
             playSFX(1);
 
         } else if (nextBallX < 0) {
+            playerB.incrementScore();
             playSFX(0);
             return true;
         } else if (nextBallX > width) {
+            playerA.incrementScore();
             playSFX(0);
             return true;
         }

@@ -1,6 +1,9 @@
 package model;
 
 public class Court {
+
+    private Sound sound = new Sound();
+
     // instance parameters
     private final RacketController playerA, playerB;
     private final double width, height; // m
@@ -23,6 +26,11 @@ public class Court {
         reset();
     }
 
+    public void playSFX(int i){
+        this.sound.setFile(i);
+        this.sound.play();
+    }
+   
     public double getWidth() {
         return width;
     }
@@ -100,16 +108,26 @@ public class Court {
         if (nextBallY < 0 || nextBallY > height) {
             ballSpeedY = -ballSpeedY;
             nextBallY = ballY + deltaT * ballSpeedY;
+            playSFX(1);
         }
-        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)
-                || (nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
-            ballSpeedX = -ballSpeedX;
+        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)) {
+            ballSpeedX = -ballSpeedX + 20;
+            ballSpeedY = ballSpeedY + 20;
             nextBallX = ballX + deltaT * ballSpeedX;
+            playSFX(1);
+        } else if ((nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
+            ballSpeedX = -ballSpeedX - 20;
+            ballSpeedY = ballSpeedY + 20;
+            nextBallX = ballX + deltaT * ballSpeedX;
+            playSFX(1);
+
         } else if (nextBallX < 0) {
             playerB.incrementScore();
+            playSFX(0);
             return true;
         } else if (nextBallX > width) {
             playerA.incrementScore();
+            playSFX(0);
             return true;
         }
         ballX = nextBallX;
@@ -124,8 +142,8 @@ public class Court {
     void reset() {
         this.racketA = height / 2;
         this.racketB = height / 2;
-        this.ballSpeedX = 200.0;
-        this.ballSpeedY = 200.0;
+        this.ballSpeedX = 275.0;
+        this.ballSpeedY = 275.0;
         this.ballX = width / 2;
         this.ballY = height / 2;
     }

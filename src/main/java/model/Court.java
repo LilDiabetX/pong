@@ -104,10 +104,12 @@ public class Court {
             ballSpeedX = -ballSpeedX + 20;
             ballSpeedY = ballSpeedY + 20;
             nextBallX = ballX + deltaT * ballSpeedX;
+            playSFX(1);
         } else if ((nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
             ballSpeedX = -ballSpeedX - 20;
             ballSpeedY = ballSpeedY + 20;
             nextBallX = ballX + deltaT * ballSpeedX;
+            playSFX(1);
 
         } else if (nextBallX < 0) {
             playSFX(0);

@@ -28,7 +28,6 @@ public class App extends Application {
             switch (ev.getCode()) {
                 case W:
                     playerA.state = RacketController.State.GOING_UP;
-                    System.out.println("ça marche");
                     break;
                 case S:
                     playerA.state = RacketController.State.GOING_DOWN;

@@ -1,28 +1,24 @@
 package model;
 
+
 public class Court {
 
     private Sound sound = new Sound();
 
     // instance parameters
-    private final RacketController playerA, playerB;
+    private RacketController playerA, playerB;
     private final double width, height; // m
-    private final double racketSpeed = 300.0; // m/s
-    private final double racketSize = 100.0; // m
-    private final double ballRadius = 10.0; // m
     // instance state
-    private double racketA; // m
-    private double racketB; // m
-    private double ballX, ballY; // m
-    private double ballSpeedX, ballSpeedY; // m
+    private Ball ball;
+    private Raquette raquetteA,raquetteB;
 
     private int scoreA, scoreB;
 
-    public Court(RacketController playerA, RacketController playerB, double width, double height) {
-        this.playerA = playerA;
-        this.playerB = playerB;
+    public Court(RacketController playerA, RacketController playerB,double width,double height){
         this.width = width;
         this.height = height;
+        this.playerA=playerA;
+        this.playerB=playerB;
         reset();
     }
 
@@ -39,24 +35,16 @@ public class Court {
         return height;
     }
 
-    public double getRacketSize() {
-        return racketSize;
+    public Raquette getRacketA() {
+        return raquetteA;
     }
 
-    public double getRacketA() {
-        return racketA;
+    public Raquette getRacketB() {
+        return raquetteB;
     }
 
-    public double getRacketB() {
-        return racketB;
-    }
-
-    public double getBallX() {
-        return ballX;
-    }
-
-    public double getBallY() {
-        return ballY;
+    public Ball getBall(){
+        return ball;
     }
 
     public int getScoreA() { return scoreA; }
@@ -65,28 +53,28 @@ public class Court {
 
     public void update(double deltaT) {
 
-        switch (playerA.getState()) {
+        switch (raquetteA.getPlayer().getState()) {
             case GOING_UP:
-                racketA -= racketSpeed * deltaT;
-                if (racketA < 0.0) racketA = 0.0;
+                raquetteA.setRacketPos(raquetteA.getRacketPos()-raquetteA.getRacketSpeed() * deltaT);
+                if (raquetteA.getRacketPos() < 0.0) raquetteA.setRacketPos(0.0);
                 break;
             case IDLE:
                 break;
             case GOING_DOWN:
-                racketA += racketSpeed * deltaT;
-                if (racketA + racketSize > height) racketA = height - racketSize;
+                raquetteA.setRacketPos(raquetteA.getRacketPos()+raquetteA.getRacketSpeed() * deltaT);
+                if (raquetteA.getRacketPos() + raquetteA.getRacketSize() > height) raquetteA.setRacketPos(height - raquetteA.getRacketSize());
                 break;
         }
-        switch (playerB.getState()) {
+        switch (raquetteB.getPlayer().getState()) {
             case GOING_UP:
-                racketB -= racketSpeed * deltaT;
-                if (racketB < 0.0) racketB = 0.0;
+                raquetteB.setRacketPos(raquetteB.getRacketPos()-raquetteB.getRacketSpeed() * deltaT);
+                if (raquetteB.getRacketPos() < 0.0) raquetteB.setRacketPos(0.0);
                 break;
             case IDLE:
                 break;
             case GOING_DOWN:
-                racketB += racketSpeed * deltaT;
-                if (racketB + racketSize > height) racketB = height - racketSize;
+                raquetteB.setRacketPos(raquetteB.getRacketPos()+raquetteB.getRacketSpeed() * deltaT);
+                if (raquetteB.getRacketPos() + raquetteB.getRacketSize() > height) raquetteB.setRacketPos(height - raquetteB.getRacketSize());
                 break;
         }
         if (updateBall(deltaT)) {
@@ -102,23 +90,23 @@ public class Court {
      */
     private boolean updateBall(double deltaT) {
         // first, compute possible next position if nothing stands in the way
-        double nextBallX = ballX + deltaT * ballSpeedX;
-        double nextBallY = ballY + deltaT * ballSpeedY;
+        double nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+        double nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
         // next, see if the ball would meet some obstacle
         if (nextBallY < 0 || nextBallY > height) {
-            ballSpeedY = -ballSpeedY;
-            nextBallY = ballY + deltaT * ballSpeedY;
+            ball.setBallSpeedY(-ball.getBallSpeedY());
+            nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
             playSFX(1);
         }
-        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)) {
-            ballSpeedX = -ballSpeedX + 20;
-            ballSpeedY = ballSpeedY + 20;
-            nextBallX = ballX + deltaT * ballSpeedX;
+        if ((nextBallX < 0 && nextBallY > raquetteA.getRacketPos() && nextBallY < raquetteA.getRacketPos() + raquetteA.getRacketSize())) {
+            ball.setBallSpeedX(-ball.getBallSpeedX()+20);
+            ball.setBallSpeedY(ball.getBallSpeedY()+20);
+            nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
             playSFX(1);
-        } else if ((nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
-            ballSpeedX = -ballSpeedX - 20;
-            ballSpeedY = ballSpeedY + 20;
-            nextBallX = ballX + deltaT * ballSpeedX;
+        } else if ((nextBallX > width && nextBallY > raquetteB.getRacketPos() && nextBallY < raquetteB.getRacketPos() + raquetteB.getRacketSize())) {
+            ball.setBallSpeedX(-ball.getBallSpeedX()-20);
+            ball.setBallSpeedY(ball.getBallSpeedY()+20);
+            nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
             playSFX(1);
 
         } else if (nextBallX < 0) {
@@ -130,21 +118,14 @@ public class Court {
             playSFX(0);
             return true;
         }
-        ballX = nextBallX;
-        ballY = nextBallY;
+        ball.setBallX(nextBallX);
+        ball.setBallY(nextBallY);
         return false;
     }
 
-    public double getBallRadius() {
-        return ballRadius;
-    }
-
-    void reset() {
-        this.racketA = height / 2;
-        this.racketB = height / 2;
-        this.ballSpeedX = 275.0;
-        this.ballSpeedY = 275.0;
-        this.ballX = width / 2;
-        this.ballY = height / 2;
+    void reset(){
+        this.raquetteA = new Raquette(playerA,this.height/2);
+        this.raquetteB = new Raquette(playerB,this.height/2);
+        this.ball = new Ball(this.width/2,this.height/2,275.0,275.0);
     }
 }

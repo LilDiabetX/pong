@@ -1,7 +1,6 @@
 package model;
 
-public class Raquette {
-
+public class Raquette{
 	private RacketController player;
 	private double racketSpeed = 300.0; // m/s
     private double racketSize = 100.0; // m
@@ -43,5 +42,4 @@ public class Raquette {
     public void setPlayer(RacketController player) {
         this.player=player;
     }
-	
 }

@@ -66,6 +66,11 @@ public class GameView {
         racketAScore = new Label("0");
         racketBScore = new Label("0");
 
+        Pane gameObjects = new Pane(racketA, racketB, ball);
+
+        racketAScore = new Label("0");
+        racketBScore = new Label("0");
+
         HBox scoresBox = new HBox(100, racketAScore, racketBScore);
         scoresBox.setPadding(new Insets(50, 0, 0, 0));
         scoresBox.setAlignment(Pos.TOP_CENTER);
@@ -87,10 +92,10 @@ public class GameView {
                 }
                 court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
                 last = now;
-                racketA.setY(court.getRacketA().getRacketPos() * scale);
-                racketB.setY(court.getRacketB().getRacketPos() * scale);
-                ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
-                ball.setCenterY(court.getBall().getBallY() * scale);
+                racketA.setY(court.getRacketA() * scale);
+                racketB.setY(court.getRacketB() * scale);
+                ball.setCenterX(court.getBallX() * scale + xMargin);
+                ball.setCenterY(court.getBallY() * scale);
                 if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
                     racketAScore.setText(String.valueOf(court.getScoreA()));
                     racketBScore.setText(String.valueOf(court.getScoreB()));

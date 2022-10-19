@@ -1,9 +1,8 @@
 package gui;
 
-
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.Court;
 import model.RacketController;
@@ -11,24 +10,26 @@ import model.RacketController;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
-        var root = new Pane();
+        var root = new StackPane();
         var gameScene = new Scene(root);
         class Player implements RacketController {
             State state = State.IDLE;
-
+            private int score = 0;
             @Override
-            public State getState() {
-                return state;
-            }
+            public State getState() { return state; }
+            @Override
+            public int getScore() { return score; }
+            @Override
+            public void incrementScore() { score++; }
         }
         var playerA = new Player();
         var playerB = new Player();
         gameScene.setOnKeyPressed(ev -> {
             switch (ev.getCode()) {
-                case CONTROL:
+                case W:
                     playerA.state = RacketController.State.GOING_UP;
                     break;
-                case ALT:
+                case S:
                     playerA.state = RacketController.State.GOING_DOWN;
                     break;
                 case UP:
@@ -41,10 +42,10 @@ public class App extends Application {
         });
         gameScene.setOnKeyReleased(ev -> {
             switch (ev.getCode()) {
-                case CONTROL:
+                case W:
                     if (playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
                     break;
-                case ALT:
+                case S:
                     if (playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
                     break;
                 case UP:
@@ -61,4 +62,6 @@ public class App extends Application {
         primaryStage.show();
         gameView.animate();
     }
+
+
 }

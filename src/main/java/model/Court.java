@@ -15,6 +15,7 @@ public class Court {
     private double racketB; // m
     private double ballX, ballY; // m
     private double ballSpeedX, ballSpeedY; // m
+    Countdown c;
 
     public Court(RacketController playerA, RacketController playerB, double width, double height) {
         this.playerA = playerA;
@@ -22,6 +23,8 @@ public class Court {
         this.width = width;
         this.height = height;
         reset();
+        c=new Countdown();
+        
     }
 
     public void playSFX(int i){

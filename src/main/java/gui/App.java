@@ -26,6 +26,9 @@ public class App extends Application {
         var playerB = new Player();
         gameScene.setOnKeyPressed(ev -> {
             switch (ev.getCode()) {
+                case Z :
+                    playerA.state = RacketController.State.GOING_UP;
+                    break;
                 case W:
                     playerA.state = RacketController.State.GOING_UP;
                     break;
@@ -42,6 +45,9 @@ public class App extends Application {
         });
         gameScene.setOnKeyReleased(ev -> {
             switch (ev.getCode()) {
+                case Z :
+                    if (playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
+                    break;
                 case W:
                     if (playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
                     break;

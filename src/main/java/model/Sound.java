@@ -15,22 +15,12 @@ public class Sound{
 		ClassLoader loader = Sound.class.getClassLoader();
 		soundURL[0]=loader.getResource("sounds/sonPointPong.wav");
 		soundURL[1]=loader.getResource("sounds/sonChocPong.wav");
-		/*
-		try{
-			soundURL[0]=new File("resources/sonPointPong.wav").toURI().toURL();
-		}
-		catch(Exception e){
-			System.out.println(e);
-		}
-		*/
 	}
 
 	public void setFile(int i){
 		try{
 			URL u = soundURL[i];
-			System.out.println(u);
 			AudioInputStream ais = AudioSystem.getAudioInputStream(u);
-			System.out.println(ais);
 			this.clip=AudioSystem.getClip();
 			this.clip.open(ais);
 		}

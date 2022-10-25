@@ -3,10 +3,10 @@ package model;
 
 public class Court {
 
-    private final Sound sound = new Sound();
+    private Sound sound = new Sound();
 
     // instance parameters
-    private final RacketController playerA, playerB;
+    private RacketController playerA, playerB;
     private final double width, height; // m
     // instance state
     private Ball ball;

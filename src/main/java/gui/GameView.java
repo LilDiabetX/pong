@@ -9,8 +9,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
 import model.Court;
-import model.Ball;
-import model.Raquette;
 
 public class GameView {
     // class parameters

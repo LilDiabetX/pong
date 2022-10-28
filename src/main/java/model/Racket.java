@@ -1,13 +1,18 @@
 package model;
 
-public class Raquette{
+public class Racket {
+    private static int counter;
+
+    private final int playerID;
 	private RacketController player;
 	private double racketSpeed = 300.0; // m/s
     private double racketSize = 100.0; // m
     private double racketPos; //m
 
-    public Raquette(RacketController player,double racketPos){
-    	this.player=player;
+    public Racket(RacketController player, double racketPos){
+    	counter++;
+        this.player=player;
+        this.playerID = counter;
     	this.racketPos=racketPos;
     }
 
@@ -41,5 +46,9 @@ public class Raquette{
 
     public void setPlayer(RacketController player) {
         this.player=player;
+    }
+
+    public String toString() {
+        return String.valueOf(playerID);
     }
 }

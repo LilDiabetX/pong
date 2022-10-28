@@ -10,11 +10,11 @@ public class Court {
     private final double width, height; // m
     // instance state
     private Ball ball;
-    private Raquette raquetteA,raquetteB;
+    private Racket racketA, racketB;
 
     private int scoreA, scoreB;
 
-    public Court(RacketController playerA, RacketController playerB,double width,double height){
+    public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
         this.height = height;
         this.playerA=playerA;
@@ -35,12 +35,12 @@ public class Court {
         return height;
     }
 
-    public Raquette getRacketA() {
-        return raquetteA;
+    public Racket getRacketA() {
+        return racketA;
     }
 
-    public Raquette getRacketB() {
-        return raquetteB;
+    public Racket getRacketB() {
+        return racketB;
     }
 
     public Ball getBall(){
@@ -53,30 +53,22 @@ public class Court {
 
     public void update(double deltaT) {
 
-        switch (raquetteA.getPlayer().getState()) {
-            case GOING_UP:
-                raquetteA.setRacketPos(raquetteA.getRacketPos()-raquetteA.getRacketSpeed() * deltaT);
-                if (raquetteA.getRacketPos() < 0.0) raquetteA.setRacketPos(0.0);
-                break;
-            case IDLE:
-                break;
-            case GOING_DOWN:
-                raquetteA.setRacketPos(raquetteA.getRacketPos()+raquetteA.getRacketSpeed() * deltaT);
-                if (raquetteA.getRacketPos() + raquetteA.getRacketSize() > height) raquetteA.setRacketPos(height - raquetteA.getRacketSize());
-                break;
+        Racket[] racketTab = {racketA, racketB};
+        for (Racket racket : racketTab) {
+            switch (racket.getPlayer().getState()) {
+                case GOING_UP:
+                    racket.setRacketPos(racket.getRacketPos()- racket.getRacketSpeed() * deltaT);
+                    if (racket.getRacketPos() < 0.0) racket.setRacketPos(0.0);
+                    break;
+                case IDLE:
+                    break;
+                case GOING_DOWN:
+                    racket.setRacketPos(racket.getRacketPos()+ racket.getRacketSpeed() * deltaT);
+                    if (racket.getRacketPos() + racket.getRacketSize() > height) racket.setRacketPos(height - racket.getRacketSize());
+                    break;
+            }
         }
-        switch (raquetteB.getPlayer().getState()) {
-            case GOING_UP:
-                raquetteB.setRacketPos(raquetteB.getRacketPos()-raquetteB.getRacketSpeed() * deltaT);
-                if (raquetteB.getRacketPos() < 0.0) raquetteB.setRacketPos(0.0);
-                break;
-            case IDLE:
-                break;
-            case GOING_DOWN:
-                raquetteB.setRacketPos(raquetteB.getRacketPos()+raquetteB.getRacketSpeed() * deltaT);
-                if (raquetteB.getRacketPos() + raquetteB.getRacketSize() > height) raquetteB.setRacketPos(height - raquetteB.getRacketSize());
-                break;
-        }
+
         if (updateBall(deltaT)) {
             scoreA = playerA.getScore();
             scoreB = playerB.getScore();
@@ -89,7 +81,7 @@ public class Court {
      * @return true if a player lost
      */
     private boolean updateBall(double deltaT) {
-        // first, compute possible next position if nothing stands in the way
+        // first, compute possible next position if nothing stands in the way.
         double nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
         double nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
         // next, see if the ball would meet some obstacle
@@ -98,15 +90,17 @@ public class Court {
             nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
             playSFX(1);
         }
-        if ((nextBallX < 0 && nextBallY > raquetteA.getRacketPos() && nextBallY < raquetteA.getRacketPos() + raquetteA.getRacketSize())) {
+        if ((nextBallX < 0 && nextBallY > racketA.getRacketPos() && nextBallY < racketA.getRacketPos() + racketA.getRacketSize())) {
             ball.setBallSpeedX(-ball.getBallSpeedX()+20);
             ball.setBallSpeedY(ball.getBallSpeedY()+20);
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+            ball.invertLastHitBy();
             playSFX(1);
-        } else if ((nextBallX > width && nextBallY > raquetteB.getRacketPos() && nextBallY < raquetteB.getRacketPos() + raquetteB.getRacketSize())) {
+        } else if ((nextBallX > width && nextBallY > racketB.getRacketPos() && nextBallY < racketB.getRacketPos() + racketB.getRacketSize())) {
             ball.setBallSpeedX(-ball.getBallSpeedX()-20);
             ball.setBallSpeedY(ball.getBallSpeedY()+20);
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+            ball.invertLastHitBy();
             playSFX(1);
 
         } else if (nextBallX < 0) {
@@ -124,8 +118,8 @@ public class Court {
     }
 
     void reset(){
-        this.raquetteA = new Raquette(playerA,this.height/2);
-        this.raquetteB = new Raquette(playerB,this.height/2);
-        this.ball = new Ball(this.width/2,this.height/2,275.0,275.0);
+        this.racketA = new Racket(playerA,this.height/2);
+        this.racketB = new Racket(playerB,this.height/2);
+        this.ball = new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB);
     }
 }

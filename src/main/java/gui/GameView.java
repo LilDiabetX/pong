@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +22,9 @@ public class GameView {
     private final Rectangle racketA, racketB;
 
     private final Label racketAScore, racketBScore;
-    private final Circle ball;
+    private ArrayList<Circle> balls;
+    /*private final Circle ball;
+    private final Circle newBall;*/
 
     /**
      * @param court le "modèle" de cette vue (le terrain de jeu de raquettes et tout ce qu'il y a dessus)
@@ -52,14 +55,25 @@ public class GameView {
         racketB.setX(court.getWidth() * scale + xMargin);
         racketB.setY(court.getRacketB().getRacketPos() * scale);
 
-        ball = new Circle();
-        ball.setRadius(court.getBall().getBallRadius());
+        balls = new ArrayList<Circle>();
+        for (int i = 0; i < court.getBalls().size(); i++) {
+            balls.add(new Circle());
+            balls.get(i).setRadius(court.getBalls().get(i).getBallRadius());
+            balls.get(i).setFill(Color.BLACK);
+
+            balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
+            balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
+        }
+        /*ball.setRadius(court.getBalls().getBallRadius());
         ball.setFill(Color.BLACK);
 
         ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
         ball.setCenterY(court.getBall().getBallY() * scale);
+        */
 
-        Pane gameObjects = new Pane(racketA, racketB, ball);
+        
+
+        Pane gameObjects = new Pane(racketA, racketB, balls.get(0), balls.get(1));
 
         racketAScore = new Label("0");
         racketBScore = new Label("0");
@@ -87,8 +101,13 @@ public class GameView {
                 last = now;
                 racketA.setY(court.getRacketA().getRacketPos() * scale);
                 racketB.setY(court.getRacketB().getRacketPos() * scale);
-                ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
-                ball.setCenterY(court.getBall().getBallY() * scale);
+                for (int i = 0; i < balls.size(); i++) {
+                    balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
+                    balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
+
+                    /*ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
+                    ball.setCenterY(court.getBall().getBallY() * scale);*/
+                }
                 if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
                     racketAScore.setText(String.valueOf(court.getScoreA()));
                     racketBScore.setText(String.valueOf(court.getScoreB()));

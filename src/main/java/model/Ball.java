@@ -9,6 +9,8 @@ public class Ball{
 
     private boolean isLastHitPlayerB;       // false at the beginning (must be changed)
 
+    private static int nbBalls = 0;
+
 	public Ball(double ballX, double ballY, double ballSpeedX, double ballSpeedY, Racket playerA, Racket playerB){
 		this.ballX = ballX;
 		this.ballY = ballY;
@@ -16,6 +18,7 @@ public class Ball{
 		this.ballSpeedY = ballSpeedY;
         this.playerA = playerA;
         this.playerB = playerB;
+        this.nbBalls ++;
 	}
 
 	public double getBallRadius() {
@@ -73,4 +76,21 @@ public class Ball{
     public void invertLastHitBy() {
         isLastHitPlayerB = !isLastHitPlayerB;
     }
+
+    public Racket getPlayerA() {
+        return playerA;
+    }
+
+    public Racket getPlayerB() {
+        return playerB;
+    }
+
+    public boolean isLastHitPlayerB() {
+        return isLastHitPlayerB;
+    }
+
+    public static int getNbBalls() {
+        return nbBalls;
+    }
+
 }

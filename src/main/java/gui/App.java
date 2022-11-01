@@ -15,50 +15,85 @@ public class App extends Application {
         class Player implements RacketController {
             State state = State.IDLE;
             private int score = 0;
+            private boolean inverted = false;
             @Override
             public State getState() { return state; }
             @Override
             public int getScore() { return score; }
             @Override
             public void incrementScore() { score++; }
+            @Override
+            public void setInverted(boolean b){ inverted = b; }
+            @Override
+            public boolean getInverted() { return inverted; }
         }
         var playerA = new Player();
         var playerB = new Player();
         gameScene.setOnKeyPressed(ev -> {
             switch (ev.getCode()) {
                 case Z :
-                    playerA.state = RacketController.State.GOING_UP;
-                    break;
+                    if(!playerA.getInverted()){
+                        playerA.state = RacketController.State.GOING_UP;
+                        break;
+                    }
+                    else{
+                        playerA.state = RacketController.State.GOING_DOWN;
+                        break;
+                    }
                 case W:
-                    playerA.state = RacketController.State.GOING_UP;
-                    break;
+                    if(!playerA.getInverted()){
+                        playerA.state = RacketController.State.GOING_UP;
+                        break;
+                    }
+                    else{
+                        playerA.state = RacketController.State.GOING_DOWN;
+                        break;
+                    }
                 case S:
-                    playerA.state = RacketController.State.GOING_DOWN;
-                    break;
+                    if(!playerA.getInverted()){
+                        playerA.state = RacketController.State.GOING_DOWN;
+                        break;
+                    }
+                    else{
+                        playerA.state = RacketController.State.GOING_UP;
+                        break;
+                    }
                 case UP:
-                    playerB.state = RacketController.State.GOING_UP;
-                    break;
+                    if(!playerB.getInverted()){
+                        playerB.state = RacketController.State.GOING_UP;
+                        break;
+                    }
+                    else{
+                        playerB.state = RacketController.State.GOING_DOWN;
+                        break;
+                    }
                 case DOWN:
-                    playerB.state = RacketController.State.GOING_DOWN;
-                    break;
+                    if(!playerB.getInverted()){
+                        playerB.state = RacketController.State.GOING_DOWN;
+                        break;
+                    }
+                    else{
+                        playerB.state = RacketController.State.GOING_UP;
+                        break;
+                    }
             }
         });
         gameScene.setOnKeyReleased(ev -> {
             switch (ev.getCode()) {
                 case Z :
-                    if (playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
+                    if (playerA.state == RacketController.State.GOING_UP||playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
                     break;
                 case W:
-                    if (playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
+                    if (playerA.state == RacketController.State.GOING_UP||playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
                     break;
                 case S:
-                    if (playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
+                    if (playerA.state == RacketController.State.GOING_DOWN||playerA.state == RacketController.State.GOING_UP) playerA.state = RacketController.State.IDLE;
                     break;
                 case UP:
-                    if (playerB.state == RacketController.State.GOING_UP) playerB.state = RacketController.State.IDLE;
+                    if (playerB.state == RacketController.State.GOING_UP||playerB.state == RacketController.State.GOING_DOWN) playerB.state = RacketController.State.IDLE;
                     break;
                 case DOWN:
-                    if (playerB.state == RacketController.State.GOING_DOWN) playerB.state = RacketController.State.IDLE;
+                    if (playerB.state == RacketController.State.GOING_DOWN||playerB.state == RacketController.State.GOING_UP) playerB.state = RacketController.State.IDLE;
                     break;
             }
         });

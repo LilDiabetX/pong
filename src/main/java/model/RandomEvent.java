@@ -23,4 +23,9 @@ public class RandomEvent {
 	public double getPosY(){
 		return this.posY;
 	}
+
+	// renvoie le court
+	public Court getCourt(){
+		return this.court;
+	}
 }

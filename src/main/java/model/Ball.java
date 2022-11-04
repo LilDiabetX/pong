@@ -38,6 +38,14 @@ public class Ball{
         return ballSpeedY;
     }
 
+    public Racket getPlayerA(){
+        return playerA;
+    }
+
+    public Racket getPlayerB(){
+        return playerB;
+    }
+
     public Racket getHitBy() {
         if (isLastHitPlayerB) {
             return playerB;

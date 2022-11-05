@@ -1,5 +1,7 @@
 package model;
 
+import javafx.scene.paint.Color;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -8,7 +10,7 @@ public class InversionTouches extends PowerUp{
 	private Timer timer = new Timer();
 	
 	InversionTouches(Court court, double radius){
-		super(court,radius);
+		super(court,radius, Color.BLUE);
 	}
 
 	public void applyEffect(){

@@ -5,6 +5,8 @@ public class Court {
 
     private Sound sound = new Sound();
 
+    private final PowerUpManager powerUpManager = PowerUpManager.getInstance(this);
+
     // instance parameters
     private RacketController playerA, playerB;
     private final double width, height; // m
@@ -77,6 +79,11 @@ public class Court {
             }
         }
 
+        if (powerUpManager.decrementCountdownBy(deltaT)) {
+            powerUpManager.resetCountdown();
+            powerUpManager.createNewPowerUp();
+        }
+
         if (updateBall(deltaT)) {
             scoreA = playerA.getScore();
             scoreB = playerB.getScore();
@@ -129,5 +136,6 @@ public class Court {
         this.racketA = new Racket(playerA,this.height/2);
         this.racketB = new Racket(playerB,this.height/2);
         this.ball = new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB);
+        powerUpManager.resetCountdown();
     }
 }

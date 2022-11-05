@@ -31,59 +31,43 @@ public class App extends Application {
         var playerB = new Player();
         gameScene.setOnKeyPressed(ev -> {
             switch (ev.getCode()) {
-                case Z :
+                case Z: case W:
                     if(!playerA.getInverted()){
                         playerA.state = RacketController.State.GOING_UP;
-                        break;
                     }
-                    else{
+                    else {
                         playerA.state = RacketController.State.GOING_DOWN;
-                        break;
                     }
-                case W:
-                    if(!playerA.getInverted()){
-                        playerA.state = RacketController.State.GOING_UP;
-                        break;
-                    }
-                    else{
-                        playerA.state = RacketController.State.GOING_DOWN;
-                        break;
-                    }
+                    break;
                 case S:
                     if(!playerA.getInverted()){
                         playerA.state = RacketController.State.GOING_DOWN;
-                        break;
                     }
                     else{
                         playerA.state = RacketController.State.GOING_UP;
-                        break;
                     }
+                    break;
                 case UP:
                     if(!playerB.getInverted()){
                         playerB.state = RacketController.State.GOING_UP;
-                        break;
                     }
                     else{
                         playerB.state = RacketController.State.GOING_DOWN;
-                        break;
                     }
+                    break;
                 case DOWN:
                     if(!playerB.getInverted()){
                         playerB.state = RacketController.State.GOING_DOWN;
-                        break;
                     }
                     else{
                         playerB.state = RacketController.State.GOING_UP;
-                        break;
                     }
+                    break;
             }
         });
         gameScene.setOnKeyReleased(ev -> {
             switch (ev.getCode()) {
-                case Z :
-                    if (playerA.state == RacketController.State.GOING_UP||playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
-                    break;
-                case W:
+                case Z : case W:
                     if (playerA.state == RacketController.State.GOING_UP||playerA.state == RacketController.State.GOING_DOWN) playerA.state = RacketController.State.IDLE;
                     break;
                 case S:
@@ -103,6 +87,4 @@ public class App extends Application {
         primaryStage.show();
         gameView.animate();
     }
-
-
 }

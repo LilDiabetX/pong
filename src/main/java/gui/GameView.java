@@ -9,19 +9,22 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
 import model.Court;
+import model.PowerUp;
 
 public class GameView {
     // class parameters
     private final Court court;
     private final StackPane gameRoot; // main node of the game
-    private final double scale;
-    private final double xMargin = 50.0, racketThickness = 10.0; // pixels
+    private static double scale;
+    private static final double xMargin = 50.0, racketThickness = 10.0; // pixels
 
     // children of the game main node
     private final Rectangle racketA, racketB;
 
     private final Label racketAScore, racketBScore;
     private final Circle ball;
+
+    private static Circle powerUp = new Circle();
 
     /**
      * @param court le "modèle" de cette vue (le terrain de jeu de raquettes et tout ce qu'il y a dessus)
@@ -59,7 +62,9 @@ public class GameView {
         ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
         ball.setCenterY(court.getBall().getBallY() * scale);
 
-        Pane gameObjects = new Pane(racketA, racketB, ball);
+        powerUp.setVisible(false);
+
+        Pane gameObjects = new Pane(racketA, racketB, ball, powerUp);
 
         racketAScore = new Label("0");
         racketBScore = new Label("0");
@@ -71,6 +76,18 @@ public class GameView {
 
         gameRoot.getChildren().addAll(gameObjects, scoresBox);
 
+    }
+
+    public static void setPowerUp(PowerUp p) {
+        powerUp.setRadius(p.getRadius());
+        powerUp.setFill(p.getColor());
+        powerUp.setCenterX(p.getPosX() * scale + xMargin);
+        powerUp.setCenterY(p.getPosY() * scale);
+        powerUp.setVisible(true);
+    }
+
+    public static void hidePowerUp() {
+        powerUp.setVisible(false);
     }
 
     public void animate() {

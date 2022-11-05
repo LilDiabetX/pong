@@ -8,6 +8,7 @@ public class Court {
     private Sound sound = new Sound();
 
     private final PowerUpManager powerUpManager = PowerUpManager.getInstance(this);
+    private PowerUp currPowerUp;
 
     // instance parameters
     private RacketController playerA, playerB;
@@ -81,12 +82,18 @@ public class Court {
             }
         }
 
+        if (currPowerUp != null && GameView.isPowerUpVisible() && currPowerUp.collide(ball)) {
+            GameView.hidePowerUp();
+            powerUpManager.resetCountdown();
+            System.out.println("Inversion des touches");
+        }
+
         if (powerUpManager.decrementCountdownBy(deltaT)) {
             if (GameView.isPowerUpVisible()) {
                 GameView.hidePowerUp();
                 powerUpManager.resetCountdown();
             } else {
-                powerUpManager.createNewPowerUp();
+                currPowerUp = powerUpManager.createNewPowerUp();
                 powerUpManager.resetVisibleCountdown();
             }
         }

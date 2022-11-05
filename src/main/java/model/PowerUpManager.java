@@ -12,7 +12,7 @@ import gui.GameView;
 public final class PowerUpManager {
     private static PowerUpManager manager;
     private final Court court;
-    private final double INITIAL_COUNTDOWN = 5;
+    private final double INITIAL_COUNTDOWN = 30;
     private double countdown;
 
     private PowerUpManager(Court court) {
@@ -23,6 +23,7 @@ public final class PowerUpManager {
             ex.printStackTrace();
         }
         this.court = court;
+        resetCountdown();
     }
 
     /**
@@ -54,9 +55,13 @@ public final class PowerUpManager {
     }
 
     public void resetVisibleCountdown() {
-        countdown = INITIAL_COUNTDOWN - 3;
+        countdown = INITIAL_COUNTDOWN / 5;
     }
 
+    /**
+     * WIP : Pour le moment seulement Inversion des touches
+     * @return
+     */
     public PowerUp createNewPowerUp() {
         InversionTouches it = new InversionTouches(court, 50);
         GameView.setPowerUp(it);

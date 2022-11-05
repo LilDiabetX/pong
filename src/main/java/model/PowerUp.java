@@ -1,5 +1,6 @@
 package model;
 
+import gui.GameView;
 import javafx.scene.paint.Color;
 
 public abstract class PowerUp extends RandomEvent {
@@ -21,11 +22,13 @@ public abstract class PowerUp extends RandomEvent {
      * Détermine s'il y a collision entre la balle et le pouvoir spécial et applique l'effet.
      * @param ball la balle dans le jeu courant
      */
-    public void collide(Ball ball) {
+    public boolean collide(Ball ball) {
         if (ball.getBallX() - radius <= getPosX() && ball.getBallX() + radius >= getPosX()
                 && ball.getBallY() - radius <= getPosY() && ball.getBallY() + radius >= getPosY()) {
             applyEffect();
+            return true;
         }
+        return false;
     }
 
     public double getRadius() { return radius; }

@@ -59,8 +59,8 @@ public final class PowerUpManager {
     }
 
     /**
-     * WIP : Pour le moment seulement Inversion des touches
-     * @return
+     * WIP: Pour le moment seulement Inversion des touches
+     * @return PowerUp
      */
     public PowerUp createNewPowerUp() {
         InversionTouches it = new InversionTouches(court, 50);

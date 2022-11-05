@@ -12,7 +12,7 @@ import gui.GameView;
 public final class PowerUpManager {
     private static PowerUpManager manager;
     private final Court court;
-    private final double INITIAL_COUNTDOWN = 15;
+    private final double INITIAL_COUNTDOWN = 5;
     private double countdown;
 
     private PowerUpManager(Court court) {
@@ -50,8 +50,11 @@ public final class PowerUpManager {
      * Réinitialise la valeur du compte à rebours à la valeur initiale.
      */
     public void resetCountdown() {
-        GameView.hidePowerUp();
         countdown = INITIAL_COUNTDOWN;
+    }
+
+    public void resetVisibleCountdown() {
+        countdown = INITIAL_COUNTDOWN - 3;
     }
 
     public PowerUp createNewPowerUp() {

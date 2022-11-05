@@ -1,6 +1,8 @@
 package model;
 
 
+import gui.GameView;
+
 public class Court {
 
     private Sound sound = new Sound();
@@ -80,8 +82,13 @@ public class Court {
         }
 
         if (powerUpManager.decrementCountdownBy(deltaT)) {
-            powerUpManager.resetCountdown();
-            powerUpManager.createNewPowerUp();
+            if (GameView.isPowerUpVisible()) {
+                GameView.hidePowerUp();
+                powerUpManager.resetCountdown();
+            } else {
+                powerUpManager.createNewPowerUp();
+                powerUpManager.resetVisibleCountdown();
+            }
         }
 
         if (updateBall(deltaT)) {
@@ -136,6 +143,5 @@ public class Court {
         this.racketA = new Racket(playerA,this.height/2);
         this.racketB = new Racket(playerB,this.height/2);
         this.ball = new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB);
-        powerUpManager.resetCountdown();
     }
 }

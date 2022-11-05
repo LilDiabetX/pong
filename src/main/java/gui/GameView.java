@@ -86,9 +86,9 @@ public class GameView {
         powerUp.setVisible(true);
     }
 
-    public static void hidePowerUp() {
-        powerUp.setVisible(false);
-    }
+    public static boolean isPowerUpVisible() { return powerUp.isVisible(); }
+
+    public static void hidePowerUp() { powerUp.setVisible(false); }
 
     public void animate() {
         new AnimationTimer() {

@@ -1,6 +1,9 @@
 package model;
 import java.util.ArrayList;
 
+import gui.GameView;
+import javafx.animation.AnimationTimer;
+
 public class Court {
 
     private Sound sound = new Sound();
@@ -87,10 +90,19 @@ public class Court {
         if (updateBalls(deltaT)) {
             scoreA = playerA.getScore();
             scoreB = playerB.getScore();
-            reset();
+            System.out.println(Ball.getNbBalls());
+            if(Ball.getNbBalls() > 1) {
+                this.balls.remove(this.balls.size()-1);
+                Ball.decrNbBalls();
+            } else {
+                reset();
+            }
         }
     }
 
+    /**
+     * @return true if a player lost a point
+     */
     private boolean updateBalls(double deltaT) {
         for (Ball ball : balls) {
             if(updateBall(ball, deltaT)) return true;

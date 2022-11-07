@@ -93,4 +93,8 @@ public class Ball{
         return nbBalls;
     }
 
+    public static void decrNbBalls() {
+        nbBalls--;
+    }
+
 }

@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
+import model.Ball;
 import model.Court;
 
 public class GameView {
@@ -87,7 +88,12 @@ public class GameView {
 
     }
 
+    public ArrayList getBalls() {
+        return this.balls;
+    }
+
     public void animate() {
+        if (Ball.getNbBalls()>1) this.balls.remove(this.balls.size()-1);
         new AnimationTimer() {
             long last = 0;
 
@@ -97,6 +103,7 @@ public class GameView {
                     last = now;
                     return;
                 }
+                //if (Ball.getNbBalls()>1) this.balls.remove(this.balls.size()-1);
                 court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
                 last = now;
                 racketA.setY(court.getRacketA().getRacketPos() * scale);

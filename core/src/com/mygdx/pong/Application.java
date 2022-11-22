@@ -6,6 +6,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Application extends ApplicationAdapter {
+
+	public static String APP_TITLE = "Pong GDX";
+	public static double APP_VERSION = 0.1;
+	public static int APP_WIDTH = 720;
+	public static int APP_HEIGHT = 480;
+	public static int APP_FPS = 60;
+
 	SpriteBatch batch;
 	Texture img;
 	

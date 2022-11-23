@@ -12,7 +12,7 @@ public class DoubleBall extends PowerUp {
     
 
     public void applyEffect() {
-
+        
     }
 
 

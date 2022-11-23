@@ -11,6 +11,8 @@ public class Ball{
 
     private static int nbBalls = 0;
 
+    private boolean hasScored = false;
+
 	public Ball(double ballX, double ballY, double ballSpeedX, double ballSpeedY, Racket playerA, Racket playerB){
 		this.ballX = ballX;
 		this.ballY = ballY;
@@ -96,5 +98,15 @@ public class Ball{
     public static void decrNbBalls() {
         nbBalls--;
     }
+
+    public boolean getHasScored() {
+        return hasScored;
+    }
+
+    public void setHasScored(boolean b) {
+        hasScored = b;
+    }
+
+    
 
 }

@@ -65,7 +65,7 @@ public class GameView {
             balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
         }
         
-        gameObjects = new Pane(racketA, racketB, balls.get(0) , balls.get(1));
+        gameObjects = new Pane(racketA, racketB, balls.get(0));
 
         racketAScore = new Label("0");
         racketBScore = new Label("0");
@@ -100,6 +100,15 @@ public class GameView {
                 while (court.getBalls().size() < balls.size()) {
                     gameObjects.getChildren().remove(balls.get(balls.size()-1));
                     balls.remove(balls.size()-1);
+                }
+                while (court.getBalls().size() > balls.size()) {
+                    balls.add(new Circle());
+                    balls.get(balls.size()-1).setRadius(court.getBalls().get(balls.size()-1).getBallRadius());
+                    balls.get(balls.size()-1).setFill(Color.BLACK);
+
+                    balls.get(balls.size()-1).setCenterX(court.getBalls().get(balls.size()-1).getBallX() * scale + xMargin);
+                    balls.get(balls.size()-1).setCenterY(court.getBalls().get(balls.size()-1).getBallY() * scale);
+                    gameObjects.getChildren().add(balls.get(balls.size()-1));
                 }
                 for (int i = 0; i < balls.size(); i++) {
                     balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);

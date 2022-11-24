@@ -5,7 +5,7 @@ public class RandomEvent {
 	// Les évènements aléatoires ont une position en abscisse (posX) et une position en ordonnée (posY). Ils ont également un Court sur lequel ils seront créés
 	private double posX;
 	private double posY;
-	private Court court;
+	protected Court court;
 
 	// Crée un évènement aléatoire quelque part dans le deuxième tier du court donné en paramètre
 	RandomEvent(Court court){

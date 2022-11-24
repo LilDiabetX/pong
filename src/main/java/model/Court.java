@@ -1,4 +1,5 @@
 package model;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.ArrayList;
 
 import gui.GameView;
@@ -17,18 +18,16 @@ public class Court {
 
     private int scoreA, scoreB;
 
+    private DoubleBall db; 
+
     public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
         this.height = height;
         this.playerA=playerA;
         this.playerB=playerB;
-        this.racketA = new Racket(playerA,this.height/2);
-        this.racketB = new Racket(playerB,this.height/2);
-        this.balls = new ArrayList<Ball>();
-        this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
-        DoubleBall db = new DoubleBall(this, this.balls.get(0).getBallRadius(), this.balls.get(0));
-        this.balls.add(db.getNewb());
+        reset();
     }
+
 
     public void playSFX(int i){
         this.sound.setFile(i);
@@ -148,10 +147,14 @@ public class Court {
 
 
     void reset(){
-        System.out.println("on reset");
         this.racketA = new Racket(playerA,this.height/2);
         this.racketB = new Racket(playerB,this.height/2);
         this.balls = new ArrayList<Ball>();
         this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+    }
+
+
+    void addBall(Ball ball) {
+        balls.add(ball);
     }
 }

@@ -88,7 +88,6 @@ public class Court {
                         balls.remove(b);
                     }
                 }
-                System.out.println("y'a encore au moins une balle fréro");
             } else {
                 reset();
             }

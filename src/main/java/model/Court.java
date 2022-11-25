@@ -17,8 +17,7 @@ public class Court {
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
-
-    private DoubleBall db; 
+ 
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;

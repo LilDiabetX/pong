@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -8,12 +9,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
+import model.Ball;
 import model.Court;
 
 public class GameView {
     // class parameters
     private final Court court;
     private final StackPane gameRoot; // main node of the game
+    private final Pane gameObjects;
     private final double scale;
     private final double xMargin = 50.0, racketThickness = 10.0; // pixels
 
@@ -21,7 +24,7 @@ public class GameView {
     private final Rectangle racketA, racketB;
 
     private final Label racketAScore, racketBScore;
-    private final Circle ball;
+    private ArrayList<Circle> balls;
 
     /**
      * @param court le "modèle" de cette vue (le terrain de jeu de raquettes et tout ce qu'il y a dessus)
@@ -52,14 +55,17 @@ public class GameView {
         racketB.setX(court.getWidth() * scale + xMargin);
         racketB.setY(court.getRacketB().getRacketPos() * scale);
 
-        ball = new Circle();
-        ball.setRadius(court.getBall().getBallRadius());
-        ball.setFill(Color.BLACK);
+        balls = new ArrayList<Circle>();
+        for (int i = 0; i < court.getBalls().size(); i++) {
+            balls.add(new Circle());
+            balls.get(i).setRadius(court.getBalls().get(i).getBallRadius());
+            balls.get(i).setFill(Color.BLACK);
 
-        ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
-        ball.setCenterY(court.getBall().getBallY() * scale);
-
-        Pane gameObjects = new Pane(racketA, racketB, ball);
+            balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
+            balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
+        }
+        
+        gameObjects = new Pane(racketA, racketB, balls.get(0));
 
         racketAScore = new Label("0");
         racketBScore = new Label("0");
@@ -71,6 +77,10 @@ public class GameView {
 
         gameRoot.getChildren().addAll(gameObjects, scoresBox);
 
+    }
+
+    public ArrayList<Circle> getBalls() {
+        return this.balls;
     }
 
     public void animate() {
@@ -87,8 +97,23 @@ public class GameView {
                 last = now;
                 racketA.setY(court.getRacketA().getRacketPos() * scale);
                 racketB.setY(court.getRacketB().getRacketPos() * scale);
-                ball.setCenterX(court.getBall().getBallX() * scale + xMargin);
-                ball.setCenterY(court.getBall().getBallY() * scale);
+                while (court.getBalls().size() < balls.size()) {
+                    gameObjects.getChildren().remove(balls.get(balls.size()-1));
+                    balls.remove(balls.size()-1);
+                }
+                while (court.getBalls().size() > balls.size()) {
+                    balls.add(new Circle());
+                    balls.get(balls.size()-1).setRadius(court.getBalls().get(balls.size()-1).getBallRadius());
+                    balls.get(balls.size()-1).setFill(Color.BLACK);
+
+                    balls.get(balls.size()-1).setCenterX(court.getBalls().get(balls.size()-1).getBallX() * scale + xMargin);
+                    balls.get(balls.size()-1).setCenterY(court.getBalls().get(balls.size()-1).getBallY() * scale);
+                    gameObjects.getChildren().add(balls.get(balls.size()-1));
+                }
+                for (int i = 0; i < balls.size(); i++) {
+                    balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
+                    balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
+                }
                 if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
                     racketAScore.setText(String.valueOf(court.getScoreA()));
                     racketBScore.setText(String.valueOf(court.getScoreB()));

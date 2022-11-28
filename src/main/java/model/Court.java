@@ -1,5 +1,9 @@
 package model;
+import java.time.chrono.ThaiBuddhistChronology;
+import java.util.ArrayList;
 
+import gui.GameView;
+import javafx.animation.AnimationTimer;
 
 public class Court {
 
@@ -9,10 +13,11 @@ public class Court {
     private RacketController playerA, playerB;
     private final double width, height; // m
     // instance state
-    private Ball ball;
+    private ArrayList<Ball> balls;
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
+ 
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
@@ -21,6 +26,7 @@ public class Court {
         this.playerB=playerB;
         reset();
     }
+
 
     public void playSFX(int i){
         this.sound.setFile(i);
@@ -43,8 +49,8 @@ public class Court {
         return racketB;
     }
 
-    public Ball getBall(){
-        return ball;
+    public ArrayList<Ball> getBalls() {
+        return this.balls;
     }
 
     public RacketController getPlayerA(){
@@ -77,18 +83,35 @@ public class Court {
             }
         }
 
-        if (updateBall(deltaT)) {
+        if (updateBalls(deltaT)) {
             scoreA = playerA.getScore();
             scoreB = playerB.getScore();
-            reset();
+            System.out.println(Ball.getNbBalls());
+            if(balls.size() > 1) {
+                for (Ball b : balls) {
+                    if (b.getHasScored()) {
+                        b.setHasScored(false);
+                        balls.remove(b);
+                    }
+                }
+            } else {
+                reset();
+            }
         }
     }
 
-
     /**
-     * @return true if a player lost
+     * @return true if a player lost a point
      */
-    private boolean updateBall(double deltaT) {
+    private boolean updateBalls(double deltaT) {
+        for (Ball ball : balls) {
+            if(updateBall(ball, deltaT)) return true;
+        }
+        return false;
+    }
+
+
+    private boolean updateBall(Ball ball, double deltaT) {
         // first, compute possible next position if nothing stands in the way.
         double nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
         double nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
@@ -98,25 +121,27 @@ public class Court {
             nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
             playSFX(1);
         }
-        if ((nextBallX < 0 && nextBallY > racketA.getRacketPos() && nextBallY < racketA.getRacketPos() + racketA.getRacketSize())) {
-            ball.setBallSpeedX(-ball.getBallSpeedX()+20);
-            ball.setBallSpeedY(ball.getBallSpeedY()+20);
+        if ((nextBallX < 0 && nextBallY > racketA.getRacketPos() && nextBallY < racketA.getRacketPos() + racketA.getRacketSize())) { //si on touche la raquette de gauche
+            ball.setBallSpeedX(-ball.getBallSpeedX()+20); //on change le sens de la vitesse horizontale et on l'augmente de 20
+            ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
             ball.invertLastHitBy();
             playSFX(1);
-        } else if ((nextBallX > width && nextBallY > racketB.getRacketPos() && nextBallY < racketB.getRacketPos() + racketB.getRacketSize())) {
-            ball.setBallSpeedX(-ball.getBallSpeedX()-20);
-            ball.setBallSpeedY(ball.getBallSpeedY()+20);
+        } else if ((nextBallX > width && nextBallY > racketB.getRacketPos() && nextBallY < racketB.getRacketPos() + racketB.getRacketSize())) { //si on touche la raquette de droite
+            ball.setBallSpeedX(-ball.getBallSpeedX()-20); //on change le sens de la vitesse horizontale et on l'augmente de 20
+            ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
             ball.invertLastHitBy();
             playSFX(1);
 
         } else if (nextBallX < 0) {
             playerB.incrementScore();
+            ball.setHasScored(true);
             playSFX(0);
             return true;
         } else if (nextBallX > width) {
             playerA.incrementScore();
+            ball.setHasScored(true);
             playSFX(0);
             return true;
         }
@@ -125,9 +150,16 @@ public class Court {
         return false;
     }
 
+
     void reset(){
         this.racketA = new Racket(playerA,this.height/2);
         this.racketB = new Racket(playerB,this.height/2);
-        this.ball = new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB);
+        this.balls = new ArrayList<Ball>();
+        this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+    }
+
+
+    void addBall(Ball ball) {
+        balls.add(ball);
     }
 }

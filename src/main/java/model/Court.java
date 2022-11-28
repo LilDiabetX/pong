@@ -53,6 +53,13 @@ public class Court {
         return this.balls;
     }
 
+    public RacketController getPlayerA(){
+        return playerA;
+    }
+
+    public RacketController getPlayerB(){
+        return playerB;
+    }
 
     public int getScoreA() { return scoreA; }
 

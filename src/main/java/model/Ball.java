@@ -9,10 +9,6 @@ public class Ball{
 
     private boolean isLastHitPlayerB;       // false at the beginning (must be changed)
 
-    private static int nbBalls = 0;
-
-    private boolean hasScored = false;
-
 	public Ball(double ballX, double ballY, double ballSpeedX, double ballSpeedY, Racket playerA, Racket playerB){
 		this.ballX = ballX;
 		this.ballY = ballY;
@@ -20,7 +16,6 @@ public class Ball{
 		this.ballSpeedY = ballSpeedY;
         this.playerA = playerA;
         this.playerB = playerB;
-        this.nbBalls ++;
 	}
 
 	public double getBallRadius() {
@@ -50,7 +45,8 @@ public class Ball{
     public Racket getPlayerB(){
         return playerB;
     }
-
+    
+//renvoie la raquette du joueur qui a été le dernier a toucher la balle
     public Racket getHitBy() {
         if (isLastHitPlayerB) {
             return playerB;
@@ -59,6 +55,7 @@ public class Ball{
         }
     }
 
+    //la raquette sur laquelle elle se dirige
     public Racket getNextReceivedBy() {
         if (isLastHitPlayerB) {
             return playerA;
@@ -85,34 +82,6 @@ public class Ball{
 
     public void invertLastHitBy() {
         isLastHitPlayerB = !isLastHitPlayerB;
-    }
-
-    public Racket getPlayerA() {
-        return playerA;
-    }
-
-    public Racket getPlayerB() {
-        return playerB;
-    }
-
-    public boolean isLastHitPlayerB() {
-        return isLastHitPlayerB;
-    }
-
-    public static int getNbBalls() {
-        return nbBalls;
-    }
-
-    public static void decrNbBalls() {
-        nbBalls--;
-    }
-
-    public boolean getHasScored() {
-        return hasScored;
-    }
-
-    public void setHasScored(boolean b) {
-        hasScored = b;
     }
 
     

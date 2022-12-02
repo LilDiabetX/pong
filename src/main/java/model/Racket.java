@@ -51,4 +51,14 @@ public class Racket {
     public String toString() {
         return String.valueOf(playerID);
     }
+    
+    // augmente la taille de la raquette
+    public void  ralonger(){
+  	   this.setRacketSize(this.getRacketSize()+15);  
+  	}
+     
+    //diminue la taille de la raqiette
+      public void  racourcir(){
+      	this.setRacketSize(this.getRacketSize()-15);
+   	}
 }

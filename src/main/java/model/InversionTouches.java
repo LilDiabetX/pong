@@ -12,29 +12,33 @@ public class InversionTouches extends PowerUp{
 	}
 
 	public void applyEffect(){
-		InversionTouches self = this;		
-		if(this.getCourt().getBall().getHitBy() == this.getCourt().getBall().getPlayerB()){
-			this.getCourt().getPlayerA().setInverted(true);	
-			timer.schedule( 
-        		new TimerTask() {
-            		@Override
-            		public void run() {
-                		self.getCourt().getPlayerA().setInverted(false);
-                		timer.cancel();
-            		}
-        		}, 15000 );
+		InversionTouches self = this;	
+		for (int i = 0; i < this.getCourt().getBalls().size(); i++) {
+			if(this.getCourt().getBalls().get(i).getHitBy() == this.getCourt().getBalls().get(i).getPlayerB()){
+				this.getCourt().getPlayerA().setInverted(true);	
+				timer.schedule( 
+					new TimerTask() {
+						@Override
+						public void run() {
+							self.getCourt().getPlayerA().setInverted(false);
+							timer.cancel();
+						}
+					}, 15000 );
+			}
+			else{
+				this.getCourt().getPlayerB().setInverted(true);
+				timer.schedule( 
+					new TimerTask() {
+						@Override
+						public void run() {
+							self.getCourt().getPlayerB().setInverted(false);
+							timer.cancel();
+						}
+					}, 15000 );
+			}
 		}
-		else{
-			this.getCourt().getPlayerB().setInverted(true);
-			timer.schedule( 
-        		new TimerTask() {
-            		@Override
-            		public void run() {
-                		self.getCourt().getPlayerB().setInverted(false);
-                		timer.cancel();
-            		}
-        		}, 15000 );
-		}
+			
+		
 	}
 
 }

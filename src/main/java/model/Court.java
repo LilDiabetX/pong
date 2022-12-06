@@ -1,5 +1,7 @@
 package model;
 
+import model.Countdown;
+
 public class Court {
 
     private Sound sound = new Sound();
@@ -15,15 +17,16 @@ public class Court {
     private double racketB; // m
     private double ballX, ballY; // m
     private double ballSpeedX, ballSpeedY; // m
-    Countdown c;
+    private Countdown cd;
 
     public Court(RacketController playerA, RacketController playerB, double width, double height) {
         this.playerA = playerA;
         this.playerB = playerB;
         this.width = width;
         this.height = height;
+        cd=new Countdown(1,0);
         reset();
-        c=new Countdown();
+      
         
     }
 
@@ -58,6 +61,10 @@ public class Court {
 
     public double getBallY() {
         return ballY;
+    }
+    
+    public Countdown getCd(){
+        return cd;
     }
 
     public void update(double deltaT) {

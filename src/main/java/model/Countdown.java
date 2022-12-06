@@ -1,100 +1,94 @@
- package model;
-
-
-
-
-	import java.awt.Font;
-	import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
-	import java.text.DecimalFormat;
-
-	import javax.swing.JFrame;
-	import javax.swing.JLabel;
-	import javax.swing.Timer;
+package model;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.util.Timer;
+import java.util.TimerTask;
 	
 	
-	public class Countdown {
+public class Countdown {
 
-		JFrame window;
-		JLabel counterLabel;
-		Font font1= new Font("Arial",Font.PLAIN,60);
-	    Timer timer;
-	    Court c;
+		//attribut
+
+	    private Timer timer;
+	    private Court c;
 	    
-	    int second,minute;
-	    String ddSecond,ddMinute;
+	    private int second,minute;
+	    private String ddSecond,ddMinute;
 	    
-	    DecimalFormat dFormat =new DecimalFormat("00");
+	    private DecimalFormat dFormat =new DecimalFormat("00");
+		private boolean isEnd=false;
+
+
+		// constructeurs
 	    
-	
-		
-		public Countdown() {
-			window = new JFrame() ;
-			window.setSize(800, 600);
-			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			window.setLayout(null);
-			
-			counterLabel =new JLabel("");
-			counterLabel.setBounds(300, 230, 200, 100);
-			counterLabel.setVerticalAlignment(JLabel.NORTH);
-			counterLabel.setFont(font1);
-			
-			window.add(counterLabel);
-			window.setVisible(true);
-			
-			
-	
-			counterLabel.setText("00:10");
-			second=10;
-			minute=0;
+		public Countdown(int minute, int seconde) {
+			this.second=seconde;
+			this.minute=minute;
 			countDownTimer();
-			timer.start();
-			
+		}
+
+
+		//getter 
+		public int getMinute(){
+		return this.minute;
+		}	
+
+		public int getSecond(){
+		return this.second;
+		}
+
+		public String getDdSecond(){
+        return this.ddSecond;
+    	}
+
+    	public String getDdMinute(){
+        return this.ddMinute;
+   		}
+
+		public boolean isEnd(){
+		return this.isEnd;
 		}
 		
-	
-		
-		
-	
+
+		//méthodes
 		
 		public void countDownTimer() {
-			timer= new Timer(1000, new ActionListener() {
+			
+		//création d'un timer
+		 timer = new Timer();
+
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+          
+
+            public void run() {
 				
-				 @Override
-				 public void actionPerformed(ActionEvent e) {
-					 
-					second--;
-					
+                second--;
+				ddSecond =dFormat.format(second);
+				ddMinute= dFormat.format(minute);
+				
+			
+                if (minute==0 && second==0) {
+                    isEnd=true;
+					timer.cancel();
+                   System.out.println("over");
+                }
+
+				if(second==0&& minute!=0){
+					second=59;
+					minute--;
 					ddSecond =dFormat.format(second);
 					ddMinute= dFormat.format(minute);
-					counterLabel.setText(ddMinute+":"+ddSecond);
-					
-					if(second==-1) {
-						second=59;
-						minute--;
-
-						ddSecond =dFormat.format(second);
-						ddMinute= dFormat.format(minute);
-						counterLabel.setText(ddMinute+":"+ddSecond);
-					}
-					
-					if(minute==0 && second==0) {
-						
-						
-						timer.stop();
-					
-						
-					}
-					
-					
-					
-				 }
-			});
-			
+				}
+            }
+        }, 0, 1000);
 			
 		}
+
 		
 		
 	}
-
-

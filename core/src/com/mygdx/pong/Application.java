@@ -1,38 +1,57 @@
 package com.mygdx.pong;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.pong.managers.GameScreenManager;
+import com.mygdx.pong.managers.InputManager;
 
-public class Application extends ApplicationAdapter {
 
+public class Application extends Game {
+
+	// Variables de l’application
 	public static String APP_TITLE = "Pong GDX";
 	public static double APP_VERSION = 0.1;
-	public static int APP_WIDTH = 720;
-	public static int APP_HEIGHT = 480;
+	public static int APP_DESKTOP_WIDTH = 720;
+	public static int APP_DESKTOP_HEIGHT = 480;
 	public static int APP_FPS = 60;
 
-	SpriteBatch batch;
-	Texture img;
-	
+	// Variables du Jeu
+	public static int V_WIDTH = 720;
+	public static int V_HEIGHT = 480;
+
+	// Managers
+	public GameScreenManager gsm;
+	public AssetManager assets;
+	public InputManager input;
+
+	// Batches
+	public SpriteBatch batch;
+	public ShapeRenderer shapeBatch;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		shapeBatch = new ShapeRenderer();
+
+		// Mis en place des managers
+		input = new InputManager(this);
+		assets = new AssetManager();
+		gsm = new GameScreenManager(this);
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		super.render();
 	}
 	
 	@Override
 	public void dispose () {
+		super.dispose();							// L’ordre est important
 		batch.dispose();
-		img.dispose();
+		shapeBatch.dispose();
+		assets.dispose();
+		gsm.dispose();
 	}
 }

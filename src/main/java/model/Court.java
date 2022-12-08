@@ -157,6 +157,12 @@ public class Court {
         this.balls = new ArrayList<Ball>();
         this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
     }
+    
+    void resetBall() { //pour pouvoir màj seulement la balle et pas les raquettes
+    	this.balls = new ArrayList<Ball>();
+    	 this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+    	
+    }
 
 
     void addBall(Ball ball) {

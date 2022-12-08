@@ -97,6 +97,8 @@ public class GameView {
                 last = now;
                 racketA.setY(court.getRacketA().getRacketPos() * scale);
                 racketB.setY(court.getRacketB().getRacketPos() * scale);
+                racketB.setHeight(court.getRacketB().getRacketSize() * scale);//necessaire pour ralonger et racourcir pour maj la longueur de la raquette
+                racketA.setHeight(court.getRacketA().getRacketSize() * scale);
                 while (court.getBalls().size() < balls.size()) {
                     gameObjects.getChildren().remove(balls.get(balls.size()-1));
                     balls.remove(balls.size()-1);

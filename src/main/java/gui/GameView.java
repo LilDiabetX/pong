@@ -10,6 +10,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
 import model.Ball;
+import model.Countdown;
 import model.Court;
 
 public class GameView {
@@ -22,6 +23,7 @@ public class GameView {
 
     // children of the game main node
     private final Rectangle racketA, racketB;
+     private final Label secondLabel,minuteLabel;
 
     private final Label racketAScore, racketBScore;
     private ArrayList<Circle> balls;
@@ -75,7 +77,15 @@ public class GameView {
         scoresBox.setAlignment(Pos.TOP_CENTER);
         scoresBox.getStylesheets().add(getClass().getResource("/fontstyle.css").toExternalForm());
 
-        gameRoot.getChildren().addAll(gameObjects, scoresBox);
+        secondLabel=new Label(this.court.getCd().getDdSecond());
+       minuteLabel=new Label(this.court.getCd().getDdMinute());
+        HBox timerBox = new HBox(100, minuteLabel, secondLabel);
+        timerBox.setPadding(new Insets(30, 0, 0, 0));
+        timerBox.setAlignment(Pos.TOP_LEFT);
+        timerBox.getStylesheets().add(getClass().getResource("/timerstyle.css").toExternalForm());
+
+        gameRoot.getChildren().addAll(gameObjects, scoresBox,timerBox);
+
 
     }
 
@@ -93,6 +103,8 @@ public class GameView {
                     last = now;
                     return;
                 }
+                minuteLabel.setText(court.getCd().getDdMinute());
+                secondLabel.setText(court.getCd().getDdSecond());
                 court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
                 last = now;
                 racketA.setY(court.getRacketA().getRacketPos() * scale);
@@ -117,6 +129,9 @@ public class GameView {
                 if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
                     racketAScore.setText(String.valueOf(court.getScoreA()));
                     racketBScore.setText(String.valueOf(court.getScoreB()));
+                }
+                 if(court.getCd().isEnd()){
+                    this.stop();
                 }
             }
         }.start();

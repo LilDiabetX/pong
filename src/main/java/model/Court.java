@@ -1,6 +1,7 @@
 package model;
 import java.time.chrono.ThaiBuddhistChronology;
 import java.util.ArrayList;
+import model.Countdown;
 
 import gui.GameView;
 import javafx.animation.AnimationTimer;
@@ -17,6 +18,7 @@ public class Court {
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
+     private Countdown cd;
  
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
@@ -24,6 +26,8 @@ public class Court {
         this.height = height;
         this.playerA=playerA;
         this.playerB=playerB;
+
+         cd = new Countdown(1, 3);
         reset();
     }
 
@@ -60,6 +64,11 @@ public class Court {
     public RacketController getPlayerB(){
         return playerB;
     }
+
+      public Countdown getCd(){
+        return cd;
+    }
+
 
     public int getScoreA() { return scoreA; }
 

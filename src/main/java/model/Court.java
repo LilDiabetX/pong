@@ -6,6 +6,8 @@ import model.Countdown;
 import gui.GameView;
 import javafx.animation.AnimationTimer;
 
+import model.Countdown;
+
 public class Court {
 
     private Sound sound = new Sound();
@@ -29,6 +31,8 @@ public class Court {
 
          cd = new Countdown(1, 3);
         reset();
+      
+        
     }
 
 
@@ -64,10 +68,12 @@ public class Court {
     public RacketController getPlayerB(){
         return playerB;
     }
-
-      public Countdown getCd(){
+    
+    public Countdown getCd(){
         return cd;
     }
+
+     
 
 
     public int getScoreA() { return scoreA; }

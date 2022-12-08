@@ -9,9 +9,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 import model.Ball;
 import model.Court;
 
@@ -20,8 +17,6 @@ public class GameView {
     private final Court court;
     private final StackPane gameRoot; // main node of the game
     private final Pane gameObjects;
-    private Button button;
-    private boolean pause;
     private final double scale;
     private final double xMargin = 50.0, racketThickness = 10.0; // pixels
 
@@ -37,7 +32,6 @@ public class GameView {
      * @param scale le facteur d'échelle entre les distances du modèle et le nombre de pixels correspondants dans la vue
      */
     public GameView(Court court, StackPane root, double scale) {
-        pause = false;
         this.court = court;
         this.gameRoot = root;
         this.scale = scale;
@@ -60,17 +54,6 @@ public class GameView {
 
         racketB.setX(court.getWidth() * scale + xMargin);
         racketB.setY(court.getRacketB().getRacketPos() * scale);
-
-        button = new Button("Pause");
-        button.setCancelButton(true); //La touche escape est associée au bouton pause
-        button.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-              pause = !pause;
-            }
-    
-        });
     
 
         balls = new ArrayList<Circle>();
@@ -93,7 +76,7 @@ public class GameView {
         scoresBox.setAlignment(Pos.TOP_CENTER);
         scoresBox.getStylesheets().add(getClass().getResource("/fontstyle.css").toExternalForm());
 
-        gameRoot.getChildren().addAll(gameObjects, scoresBox,button);
+        gameRoot.getChildren().addAll(gameObjects, scoresBox);
         
 
     }
@@ -108,38 +91,35 @@ public class GameView {
 
             @Override
             public void handle(long now) {
-                if (!pause){
-                    if (last == 0) { // ignore the first tick, just compute the first deltaT
-                        last = now;
-                        return;
-                    }
-                    court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
+                if (last == 0) { // ignore the first tick, just compute the first deltaT
                     last = now;
-                    racketA.setY(court.getRacketA().getRacketPos() * scale);
-                    racketB.setY(court.getRacketB().getRacketPos() * scale);
-                    while (court.getBalls().size() < balls.size()) {
-                        gameObjects.getChildren().remove(balls.get(balls.size()-1));
-                        balls.remove(balls.size()-1);
-                    }
-                    while (court.getBalls().size() > balls.size()) {
-                        balls.add(new Circle());
-                        balls.get(balls.size()-1).setRadius(court.getBalls().get(balls.size()-1).getBallRadius());
-                        balls.get(balls.size()-1).setFill(Color.BLACK);
-
-                        balls.get(balls.size()-1).setCenterX(court.getBalls().get(balls.size()-1).getBallX() * scale + xMargin);
-                        balls.get(balls.size()-1).setCenterY(court.getBalls().get(balls.size()-1).getBallY() * scale);
-                        gameObjects.getChildren().add(balls.get(balls.size()-1));
-                    }
-                    for (int i = 0; i < balls.size(); i++) {
-                        balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
-                        balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
-                    }
-                    if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
-                        racketAScore.setText(String.valueOf(court.getScoreA()));
-                        racketBScore.setText(String.valueOf(court.getScoreB()));
-                    }
-             } else {last = now;}
-            }
+                    return;
+                }
+                court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
+                last = now;
+                racketA.setY(court.getRacketA().getRacketPos() * scale);
+                racketB.setY(court.getRacketB().getRacketPos() * scale);
+                while (court.getBalls().size() < balls.size()) {
+                    gameObjects.getChildren().remove(balls.get(balls.size()-1));
+                    balls.remove(balls.size()-1);
+                }
+                while (court.getBalls().size() > balls.size()) {
+                    balls.add(new Circle());
+                    balls.get(balls.size()-1).setRadius(court.getBalls().get(balls.size()-1).getBallRadius());
+                    balls.get(balls.size()-1).setFill(Color.BLACK);
+                    balls.get(balls.size()-1).setCenterX(court.getBalls().get(balls.size()-1).getBallX() * scale + xMargin);
+                    balls.get(balls.size()-1).setCenterY(court.getBalls().get(balls.size()-1).getBallY() * scale);
+                    gameObjects.getChildren().add(balls.get(balls.size()-1));
+                }
+                for (int i = 0; i < balls.size(); i++) {
+                    balls.get(i).setCenterX(court.getBalls().get(i).getBallX() * scale + xMargin);
+                    balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
+                }
+                if (Integer.parseInt(racketAScore.getText()) != court.getScoreA() || Integer.parseInt(racketBScore.getText()) != court.getScoreB()) {
+                    racketAScore.setText(String.valueOf(court.getScoreA()));
+                    racketBScore.setText(String.valueOf(court.getScoreB()));
+                }
+             } 
         }.start();
     }
 }

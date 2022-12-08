@@ -21,6 +21,7 @@ public class InversionTouches extends PowerUp{
 						@Override
 						public void run() {
 							self.getCourt().getPlayerA().setInverted(false);
+							playSFX();
 							timer.cancel();
 						}
 					}, 15000 );
@@ -32,6 +33,7 @@ public class InversionTouches extends PowerUp{
 						@Override
 						public void run() {
 							self.getCourt().getPlayerB().setInverted(false);
+							playSFX();
 							timer.cancel();
 						}
 					}, 15000 );

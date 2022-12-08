@@ -13,11 +13,13 @@ public class Sound{
 	
 
 	
-	// initialise le tableau d'URL avec les sons à jouer. Il n'y en a que deux pour l'instant, d'autres seront à ajouter en temps voulu
+	// initialise le tableau d'URL avec les sons à jouer.
 	public Sound(){
 		ClassLoader loader = Sound.class.getClassLoader();
 		soundURL[0]=loader.getResource("sounds/sonPointPong.wav");
 		soundURL[1]=loader.getResource("sounds/sonChocPong.wav");
+		soundURL[2]=loader.getResource("sounds/bonusPong.wav");
+		soundURL[3]=loader.getResource("sounds/musiquePong.wav");
 	}
 
 	// méthode permettant de définir le son à jouer

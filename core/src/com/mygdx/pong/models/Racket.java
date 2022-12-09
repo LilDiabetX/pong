@@ -1,5 +1,6 @@
 package com.mygdx.pong.models;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.pong.controllers.RacketController;
 
@@ -10,9 +11,9 @@ public class Racket {
     private Body playerBody;
     private Body goalBody;
     private float racketSize = 80.0f; // m
-    private static final float racketThickness = 10.0f;
-    private float racketSpeed = 500.0f; // m/s
-
+    private static final float racketThickness = 13.0f;
+    private float racketSpeed = 600.0f; // m/s
+    private Vector2 prevPosition = Vector2.Zero;
 
     public Racket(RacketController player){
         counter++;
@@ -44,6 +45,9 @@ public class Racket {
         return goalBody;
     }
 
+    public Vector2 getPrevPosition() {
+        return prevPosition;
+    }
     public void setRacketSize(float racketSize) {
         this.racketSize = racketSize;
     }
@@ -60,6 +64,9 @@ public class Racket {
         this.goalBody = goalBody;
     }
 
+    public void setPrevPosition(Vector2 prevPosition) {
+        this.prevPosition = prevPosition;
+    }
     public String toString() {
         return String.valueOf(playerID);
     }

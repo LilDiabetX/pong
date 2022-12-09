@@ -1,5 +1,6 @@
 package com.mygdx.pong.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -53,24 +54,29 @@ public class GameScreen extends AbstractScreen {
     //TODO: Créer une classe Ball
     //TODO: Ajouter une liste de balles
     Body ball;
-    private final float MAXIMUM_BALL_SPEED = 15f;
+    private final boolean IS_TUTORIAL = false;
+    private final boolean SHOW_DEBUG = false;
+    private Vector2 direction = Vector2.Zero;
+    private Vector2 contactPoint = Vector2.Zero;
+    private final float BALL_RADIUS = 8f;
+    private final float INITIAL_BALL_SPEED_FACTOR = 2f;                                // La vitesse initiale de la balle (en m/s)
+    private final float INITIAL_BALL_ACCELERATION = .01f;                                      // L'accélération de la balle (en m/s²)
+    private final float MAXIMUM_BALL_SPEED = 60f;
     private float ballSpawnOffset = 120.0f;
+    private final float RAY_DISTANCE = 8f;
 
     private boolean nextDirectionRight = true;
-
-
     public GameScreen(final Application app) {
         super(app);
 
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
         this.camera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);                // Définit la taille de la caméra
-        this.b2dr = new Box2DDebugRenderer();                                                           // Crée un objet permettant d’afficher les formes des corps Box2D à l’écran
+        this.b2dr = new Box2DDebugRenderer();
     }
 
     @Override
     public void show() {
         world = new World(gravity, true);                                                       // Crée un monde physique Box2D
-
         // Contrôle les collisions entre les corps Box2D du monde physique
         world.setContactListener(new ContactListener() {
             /**
@@ -91,19 +97,10 @@ public class GameScreen extends AbstractScreen {
                     }
                 }
 
-                //TODO: Si la balle entre en collision avec une raquette, la faire rebondir de manière intéressante
-                if (fa.getBody() == ball && fb.getBody() == racketA.getPlayerBody() ) {
-                    System.out.println(ball.getPosition().y > racketA.getPlayerBody().getPosition().y + racketA.getRacketSize() / 2 / PPM);
-                }
-                if (fa.getBody() == ball && fb.getBody() == racketB.getPlayerBody() ) {
-                    System.out.println(ball.getPosition().y > racketB.getPlayerBody().getPosition().y + racketB.getRacketSize() / 2 / PPM);
-                }
-                if (fb.getBody() == ball && fa.getBody() == racketA.getPlayerBody()) {
-                    System.out.println(ball.getPosition().y > racketA.getPlayerBody().getPosition().y + racketA.getRacketSize() / 2 / PPM);
-                }
-                if (fb.getBody() == ball && fa.getBody() == racketB.getPlayerBody()) {
-                    System.out.println(ball.getPosition().y > racketB.getPlayerBody().getPosition().y + racketB.getRacketSize() / 2 / PPM);
-                }
+                // À partir d’un point de contact, on s’occupe de la réflexion de la balle
+                float contactPointY = contact.getWorldManifold().getPoints()[0].y;
+                handleBallCollisionWith(racketA, fa, fb, contactPointY);
+                handleBallCollisionWith(racketB, fa, fb, contactPointY);
             }
 
             /**
@@ -134,9 +131,37 @@ public class GameScreen extends AbstractScreen {
             public void postSolve(Contact contact, ContactImpulse impulse) {
 
             }
+
+            /**
+             * @param racket La raquette considérée
+             * @param fa Le premier corps Box2D du contact
+             * @param fb Le second corps Box2D du contact
+             * @return true si la balle entre en collision avec la raquette donnée en paramètre
+             */
+            private boolean isBallCollidingWith(Racket racket, Fixture fa, Fixture fb) {
+                return (fa.getBody() == ball && fb.getBody() == racket.getPlayerBody()) ||
+                        (fb.getBody() == ball && fa.getBody() == racket.getPlayerBody());
+            }
+
+            /**
+             * Gère la collision entre la balle et la raquette donnée en paramètre
+             * @param racket La raquette considérée
+             * @param fa Le premier corps Box2D du contact
+             * @param fb Le second corps Box2D du contact
+             * @param contactPointY La coordonnée Y du point de contact entre la balle et la raquette
+             */
+            private void handleBallCollisionWith(Racket racket, Fixture fa, Fixture fb, float contactPointY) {
+                if (isBallCollidingWith(racket, fa, fb)) {
+                    float collisionOffset = (contactPointY - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
+                    ball.setLinearVelocity(new Vector2(
+                            -ball.getLinearVelocity().x * (1 / Math.abs(collisionOffset) / 2),
+                            MathUtils.clamp(Math.abs(ball.getLinearVelocity().y) * 100 * (collisionOffset / Math.abs(collisionOffset)), -6, 6)
+                    ).nor().scl(ball.getLinearVelocity().dst(0, 0)));
+                }
+            }
         });
 
-        initArena();            // Initialise le terrain de jeu (bords, buts, raquettes, balle)
+        initArena();                                        // Initialise le terrain de jeu (bords, buts, raquettes, balle)
 
         app.batch.setProjectionMatrix(camera.combined);                                             // Définit la caméra pour le batch
         app.shapeBatch.setProjectionMatrix(camera.combined);                                        // Définit la caméra pour le shapeBatch
@@ -145,14 +170,13 @@ public class GameScreen extends AbstractScreen {
     @Override
     public void update(float delta) {
         world.step(1f / Application.APP_FPS, 6, 2);             // Met à jour le monde physique Box2D
-
         if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
             for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
                 moveBodyTask.move();                                                             // effectue la tâche de déplacement.
 
                 if (moveBodyTask.getBody() == ball) {                                            // Si la tâche concerne la balle…
                     ball.setLinearVelocity(0, 0);
-                    Vector2 randomImpulse = new Vector2((nextDirectionRight ? 1 : -1) * 1, MathUtils.random(-.6f, .6f));
+                    Vector2 randomImpulse = new Vector2((nextDirectionRight ? 1 : -1) * 1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
                     ball.applyLinearImpulse(randomImpulse, ball.getPosition(), true);
                     nextDirectionRight = !nextDirectionRight;
                 }
@@ -165,8 +189,27 @@ public class GameScreen extends AbstractScreen {
 
         movePaddle(delta, racketA);                                                              // Déplace la raquette A
         movePaddle(delta, racketB);
-
+        ball.applyLinearImpulse(ball.getLinearVelocity().add(ball.getLinearVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), ball.getPosition(), true);
         ball.setLinearVelocity(ball.getLinearVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
+
+        // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
+        world.rayCast(new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                if (fixture.getBody() == racketA.getPlayerBody() && (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                    // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                    updateDirectionAndContactPoint(racketA, point);
+                } else if (fixture.getBody() == racketB.getPlayerBody() && (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                    // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                    updateDirectionAndContactPoint(racketB, point);
+                } else {
+                    direction = Vector2.Zero;
+                    contactPoint = Vector2.Zero;
+                }
+
+                return 0;
+            }
+        }, ball.getPosition(), ball.getLinearVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
 
         stage.act(delta);                                                                        // Met à jour le stage
     }
@@ -182,11 +225,23 @@ public class GameScreen extends AbstractScreen {
                 racketA.getPlayerBody().getPosition().y * PPM - racketA.getRacketSize() / 2, Racket.getRacketThickness(), racketA.getRacketSize());     // Dessine la raquette A
         app.shapeBatch.rect(racketB.getPlayerBody().getPosition().x * PPM - Racket.getRacketThickness() / 2,
                 racketB.getPlayerBody().getPosition().y * PPM - racketA.getRacketSize() / 2, Racket.getRacketThickness(), racketB.getRacketSize());     // Dessine la raquette B
-        app.shapeBatch.circle(ball.getPosition().x * PPM, ball.getPosition().y * PPM, 6);                                                     // Dessine la balle
-        // ATTENTION: NE PAS OUBLIER DE FERMER LE shapeBatch
+        app.shapeBatch.circle(ball.getPosition().x * PPM, ball.getPosition().y * PPM, BALL_RADIUS);
+        // Dessine la balle
+        // ATTENTION: NE PAS OUBLIER DE FERMER LE shapeBatch.
         app.shapeBatch.end();
 
-        b2dr.render(world, camera.combined.cpy().scl(PPM));                                                  // Dessine les formes Box2D
+        if (IS_TUTORIAL && contactPoint != Vector2.Zero && direction != Vector2.Zero) {             // Dessine la direction de rebondissement de la balle.
+            Gdx.gl.glLineWidth(5);
+            app.shapeBatch.begin(ShapeRenderer.ShapeType.Line);
+            app.shapeBatch.setColor(Color.RED);
+            app.shapeBatch.line(contactPoint.x * PPM, contactPoint.y * PPM, contactPoint.x * PPM + direction.x * 8, contactPoint.y * PPM + direction.y * 8);
+            app.shapeBatch.end();
+            Gdx.gl.glLineWidth(1);
+        }
+
+        if (SHOW_DEBUG) {
+            b2dr.render(world, camera.combined.cpy().scl(PPM));                                              // Dessine les formes Box2D
+        }
         stage.draw();                                                                                        // Dessine le stage
     }
 
@@ -216,9 +271,9 @@ public class GameScreen extends AbstractScreen {
         createWalls();
 
         float randomY = MathUtils.random(ballSpawnOffset, camera.viewportHeight - ballSpawnOffset);
-        ball = B2DBodyBuilder.createCircle(world, camera.viewportWidth / 2, randomY, 6, false, false, true);
+        ball = B2DBodyBuilder.createCircle(world, camera.viewportWidth / 2, randomY, BALL_RADIUS, false, false, true);
         ball.setLinearVelocity(0, 0);
-        Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f), MathUtils.random(-.8f, .8f));
+        Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f), MathUtils.random(-.8f, .8f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
         nextDirectionRight = randomImpulse.x < 0;
         ball.applyLinearImpulse(randomImpulse, ball.getPosition(), true);
 
@@ -279,5 +334,15 @@ public class GameScreen extends AbstractScreen {
         } else {
             racket.getPlayerBody().setLinearVelocity(0, 0);
         }
+    }
+
+    private void updateDirectionAndContactPoint(Racket racket, Vector2 point) {
+        float collisionOffset = (point.y - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
+        direction = new Vector2(
+                -ball.getLinearVelocity().x * (1 / Math.abs(collisionOffset) / 2),
+                MathUtils.clamp(Math.abs(ball.getLinearVelocity().y) * 100 * (collisionOffset / Math.abs(collisionOffset)), -6, 6)
+        ).nor().scl(ball.getLinearVelocity().dst(0, 0));
+        contactPoint = point;
+        racket.setPrevPosition(racket.getPlayerBody().getPosition());
     }
 }

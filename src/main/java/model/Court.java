@@ -120,17 +120,14 @@ public class Court {
             nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
             playSFX(1);
         }
-        //WIP
+        
         if ((nextBallX < 0 && nextBallY > racketA.getRacketPos() && nextBallY < racketA.getRacketPos() + racketA.getRacketSize())) { //si on touche la raquette de gauche...
             if (nextBallY > racketA.getRacketPos() + racketA.getRacketSize()/2) { //... sur la moitié du bas
                 ball.setBallSpeedY(Math.abs(ball.getBallSpeedY()+20)); //on ajoute 20 à la vitesse verticale et on va vers le bas
-                System.out.println("ça a touché le bas");
             } else if (nextBallY < racketA.getRacketPos() + racketA.getRacketSize()/2) { //... sur la moitié du haut
                 ball.setBallSpeedY(-Math.abs(ball.getBallSpeedY()+20)); //on ajoute 20 à la vitesse verticale et on va vers le haut
-                System.out.println("ça a touché le haut");
             } else { // ... sur le milieu
                 ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
-                System.out.println("ça touche le milieu");
             }
             ball.setBallSpeedX(-ball.getBallSpeedX()+20); //on change le sens de la vitesse horizontale et on l'augmente de 20
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
@@ -139,13 +136,10 @@ public class Court {
         } else if ((nextBallX > width && nextBallY > racketB.getRacketPos() && nextBallY < racketB.getRacketPos() + racketB.getRacketSize())) { //si on touche la raquette de droite...
             if (nextBallY > racketB.getRacketPos() + racketB.getRacketSize()/2) { //... sur la moitié du bas
                 ball.setBallSpeedY(Math.abs(ball.getBallSpeedY()+20)); //on ajoute 20 à la vitesse verticale et on va vers le bas
-                System.out.println("ça a touché le bas");
             } else if (nextBallY < racketB.getRacketPos() + racketB.getRacketSize()/2) { //... sur la moitié du haut
                 ball.setBallSpeedY(-Math.abs(ball.getBallSpeedY()+20)); //on ajoute 20 à la vitesse verticale et on va vers le haut
-                System.out.println("ça a touché le haut");
             } else { // ... sur le milieu
                 ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
-                System.out.println("ça touche le milieu");
             }
             ball.setBallSpeedX(-ball.getBallSpeedX()-20); //on change le sens de la vitesse horizontale et on l'augmente de 20
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();

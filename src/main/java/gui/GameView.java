@@ -21,7 +21,7 @@ public class GameView {
     private final double xMargin = 50.0, racketThickness = 10.0; // pixels
 
     // children of the game main node
-    private final Rectangle racketA1, racketB1;
+    private final Rectangle racketA, racketB;
 
     private final Label racketAScore, racketBScore;
     private ArrayList<Circle> balls;
@@ -39,22 +39,22 @@ public class GameView {
         root.setMinWidth(court.getWidth() * scale + 2 * xMargin);
         root.setMinHeight(court.getHeight() * scale);
 
-        racketA1 = new Rectangle();
-        racketA1.setHeight(court.getRacketA().getRacketSize() * scale);
-        racketA1.setWidth(racketThickness);
-        racketA1.setFill(Color.BLACK); 
+        racketA = new Rectangle();
+        racketA.setHeight(court.getRacketA().getRacketSize() * scale);
+        racketA.setWidth(racketThickness);
+        racketA.setFill(Color.BLACK); 
 
-        racketA1.setX(xMargin - racketThickness);
-        racketA1.setY(court.getRacketA().getRacketPos() * scale);
+        racketA.setX(xMargin - racketThickness);
+        racketA.setY(court.getRacketA().getRacketPos() * scale);
 
 
-        racketB1 = new Rectangle();
-        racketB1.setHeight(court.getRacketB().getRacketSize() * scale);
-        racketB1.setWidth(racketThickness);
-        racketB1.setFill(Color.BLACK);
+        racketB = new Rectangle();
+        racketB.setHeight(court.getRacketB().getRacketSize() * scale);
+        racketB.setWidth(racketThickness);
+        racketB.setFill(Color.BLACK);
 
-        racketB1.setX(court.getWidth() * scale + xMargin);
-        racketB1.setY(court.getRacketB().getRacketPos() * scale);
+        racketB.setX(court.getWidth() * scale + xMargin);
+        racketB.setY(court.getRacketB().getRacketPos() * scale);
 
         balls = new ArrayList<Circle>();
         for (int i = 0; i < court.getBalls().size(); i++) {
@@ -96,8 +96,8 @@ public class GameView {
                 }
                 court.update((now - last) * 1.0e-9); // convert nanoseconds to seconds
                 last = now;
-                racketA1.setY(court.getRacketA().getRacketPos() * scale);
-                racketB1.setY(court.getRacketB().getRacketPos() * scale);
+                racketA.setY(court.getRacketA().getRacketPos() * scale);
+                racketB.setY(court.getRacketB().getRacketPos() * scale);
                 while (court.getBalls().size() < balls.size()) {
                     gameObjects.getChildren().remove(balls.get(balls.size()-1));
                     balls.remove(balls.size()-1);

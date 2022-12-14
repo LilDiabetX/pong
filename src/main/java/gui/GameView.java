@@ -66,7 +66,7 @@ public class GameView {
             balls.get(i).setCenterY(court.getBalls().get(i).getBallY() * scale);
         }
         
-        gameObjects = new Pane(racketA1, racketB1, balls.get(0));
+        gameObjects = new Pane(racketA, racketB, balls.get(0));
 
         racketAScore = new Label("0");
         racketBScore = new Label("0");

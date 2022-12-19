@@ -5,20 +5,31 @@ import com.badlogic.gdx.Input;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.controllers.RacketController;
 
-public class InputManager {
+public final class InputManager {
     public class Player implements RacketController {
         State state = State.IDLE;
-        private int score = 0;
-        private boolean inverted = false;
-
         @Override
         public State getState() { return state; }
     }
+    private static InputManager manager = null;
     private final Application app;
     Player playerA = new Player(), playerB = new Player();
 
-    public InputManager(final Application app) {
+    private InputManager(final Application app) {
+        // évite les soucis s'il y a du multi-threading
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         this.app = app;
+    }
+
+    public static InputManager getInstance(final Application app) {
+        if (manager == null) {
+            manager = new InputManager(app);
+        }
+        return manager;
     }
 
     public Player getPlayerA() {

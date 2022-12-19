@@ -33,7 +33,21 @@ public final class B2DBodyBuilder {
         return body;
     }
 
-    public static Body createCircle(World world, float x, float y, float radius, boolean isStatic, boolean fixedRotation, boolean restitution) {
+    public static void updateShapeForBox(Body body, float width, float height, boolean isSensor) {
+        body.destroyFixture(body.getFixtureList().first());
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2 / PPM, height / 2 / PPM);
+
+        FixtureDef fDef = new FixtureDef();
+        fDef.shape = shape;
+        fDef.density = 1f;
+        fDef.isSensor = isSensor;
+        body.createFixture(fDef);
+        shape.dispose();
+    }
+
+    public static Body createCircle(World world, float x, float y, float radius, boolean isStatic, boolean fixedRotation, boolean restitution, boolean isSensor) {
         Body body;
 
         BodyDef bDef = new BodyDef();
@@ -54,6 +68,7 @@ public final class B2DBodyBuilder {
         fDef.density = 1f;
         fDef.friction = 0f;
         fDef.restitution = restitution ? 1.1f : 0f;
+        fDef.isSensor = isSensor;
         body.createFixture(fDef);
         shape.dispose();
         return body;

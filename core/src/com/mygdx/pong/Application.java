@@ -36,9 +36,9 @@ public class Application extends Game {
 		shapeBatch = new ShapeRenderer();
 
 		// Mis en place des managers
-		input = new InputManager(this);
+		input = InputManager.getInstance(this);
 		assets = new AssetManager();
-		gsm = new GameScreenManager(this);
+		gsm = GameScreenManager.getInstance(this);
 	}
 
 	@Override

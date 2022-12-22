@@ -33,6 +33,10 @@ public class GameScreenManager {
         app.setScreen(this.gameScreens.get(nextScreen));
     }
 
+    public GameScreen getPlayScreen(){
+        return (GameScreen) gameScreens.get(State.PLAY);
+    }
+
     public void dispose() {
         for (AbstractScreen screen : this.gameScreens.values()) {
             if (screen != null) {

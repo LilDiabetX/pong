@@ -50,5 +50,9 @@ public class InputManager {
         } else if (playerB.state != RacketController.State.IDLE) {
             playerB.state = RacketController.State.IDLE;
         }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            app.gsm.getPlayScreen().pause();
+        }
     }
 }

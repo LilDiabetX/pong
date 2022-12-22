@@ -65,6 +65,7 @@ public class GameScreen extends AbstractScreen {
     private float ballSpawnOffset = 120.0f;
     private final float RAY_DISTANCE = 8f;
 
+    private boolean paused = false;
     private boolean nextDirectionRight = true;
     public GameScreen(final Application app) {
         super(app);
@@ -72,6 +73,10 @@ public class GameScreen extends AbstractScreen {
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
         this.camera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);                // Définit la taille de la caméra
         this.b2dr = new Box2DDebugRenderer();
+    }
+
+    public boolean getPaused(){
+        return paused;
     }
 
     @Override
@@ -169,49 +174,53 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void update(float delta) {
-        world.step(1f / Application.APP_FPS, 6, 2);             // Met à jour le monde physique Box2D
-        if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
-            for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
-                moveBodyTask.move();                                                             // effectue la tâche de déplacement.
+        if(!paused){
+            world.step(1f / Application.APP_FPS, 6, 2);             // Met à jour le monde physique Box2D
+            if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
+                for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
+                    moveBodyTask.move();                                                             // effectue la tâche de déplacement.
 
-                if (moveBodyTask.getBody() == ball) {                                            // Si la tâche concerne la balle…
-                    ball.setLinearVelocity(0, 0);
-                    Vector2 randomImpulse = new Vector2((nextDirectionRight ? 1 : -1) * 1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
-                    ball.applyLinearImpulse(randomImpulse, ball.getPosition(), true);
-                    nextDirectionRight = !nextDirectionRight;
+                    if (moveBodyTask.getBody() == ball) {                                            // Si la tâche concerne la balle…
+                        ball.setLinearVelocity(0, 0);
+                        Vector2 randomImpulse = new Vector2((nextDirectionRight ? 1 : -1) * 1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+                        ball.applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+                        nextDirectionRight = !nextDirectionRight;
+                    }
+
                 }
-
+                moveBodyTaskList.clear();                                                            // Vide la liste de tâches
             }
-            moveBodyTaskList.clear();                                                            // Vide la liste de tâches
         }
-
         app.input.handleInput(delta);                                                            // Gère les entrées de l’utilisateur
 
-        movePaddle(delta, racketA);                                                              // Déplace la raquette A
-        movePaddle(delta, racketB);
-        ball.applyLinearImpulse(ball.getLinearVelocity().add(ball.getLinearVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), ball.getPosition(), true);
-        ball.setLinearVelocity(ball.getLinearVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
+        if(!paused){
 
-        // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
-        world.rayCast(new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if (fixture.getBody() == racketA.getPlayerBody() && (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                    // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                    updateDirectionAndContactPoint(racketA, point);
-                } else if (fixture.getBody() == racketB.getPlayerBody() && (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                    // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                    updateDirectionAndContactPoint(racketB, point);
-                } else {
-                    direction = Vector2.Zero;
-                    contactPoint = Vector2.Zero;
+            movePaddle(delta, racketA);                                                              // Déplace la raquette A
+            movePaddle(delta, racketB);
+            ball.applyLinearImpulse(ball.getLinearVelocity().add(ball.getLinearVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), ball.getPosition(), true);
+            ball.setLinearVelocity(ball.getLinearVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
+
+            // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
+            world.rayCast(new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                    if (fixture.getBody() == racketA.getPlayerBody() && (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                        // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                        updateDirectionAndContactPoint(racketA, point);
+                    } else if (fixture.getBody() == racketB.getPlayerBody() && (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                        // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                        updateDirectionAndContactPoint(racketB, point);
+                    } else {
+                        direction = Vector2.Zero;
+                        contactPoint = Vector2.Zero;
+                    }
+
+                    return 0;
                 }
+            }, ball.getPosition(), ball.getLinearVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
 
-                return 0;
-            }
-        }, ball.getPosition(), ball.getLinearVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
-
-        stage.act(delta);                                                                        // Met à jour le stage
+            stage.act(delta);                                                                     // Met à jour le stage
+        }
     }
 
     @Override
@@ -247,7 +256,8 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void pause() {
-
+        paused=!paused;
+        System.out.println(paused);
     }
 
     @Override

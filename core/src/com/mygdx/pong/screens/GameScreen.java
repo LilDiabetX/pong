@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.pong.Application;
+import com.mygdx.pong.managers.BallsManager;
 import com.mygdx.pong.managers.InputManager.Player;
 import com.mygdx.pong.managers.PowerUpManager;
 import com.mygdx.pong.models.Ball;
@@ -48,7 +49,6 @@ public class GameScreen extends AbstractScreen {
      * Une liste de tâches à effectuer sur les corps Box2D (absolument nécessaire pour éviter les erreurs de concurrence)
      */
     ArrayList<MoveBodyTask> moveBodyTaskList = new ArrayList<>();
-
     ArrayList<Body> bodiesToRemove = new ArrayList<>();
 
     /**
@@ -56,18 +56,16 @@ public class GameScreen extends AbstractScreen {
      */
     Racket racketA, racketB;
 
-    Ball ball;
-
-    private final PowerUpManager powerUpManager = PowerUpManager.getInstance(app);
+    private final BallsManager ballsManager = BallsManager.getInstance(app);
+    private final PowerUpManager powerUpManager = PowerUpManager.getInstance(app, ballsManager);
 
     //Body ball;
     private final boolean IS_TUTORIAL = false;
-    private final boolean SHOW_DEBUG = true;
+    private final boolean SHOW_DEBUG = false;
     private Vector2 direction = Vector2.Zero;
     private Vector2 contactPoint = Vector2.Zero;
     private final float INITIAL_BALL_SPEED_FACTOR = 2f;                                // La vitesse initiale de la balle (en m/s)
-    private final float INITIAL_BALL_ACCELERATION = .02f;                              // L’accélération de la balle (en m/s²)
-    private final float MAXIMUM_BALL_SPEED = 60f;
+
     private final float BALL_SPAWN_OFFSET = 120.0f;
     private final float RAY_DISTANCE = 8f;
 
@@ -95,33 +93,46 @@ public class GameScreen extends AbstractScreen {
                 Fixture fa = contact.getFixtureA();
                 Fixture fb = contact.getFixtureB();
 
-                if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {                                                         // Si la balle entre en collision…
-                    // Position aléatoire à laquelle la balle va apparaître suite à une sortie de la balle
-                    float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
-                    if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
-                        fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody()) {                   // avec l’une des buts
-                        moveBodyTaskList.add(new MoveBodyTask(ball.getBody(),camera.viewportWidth / 2 / PPM, randomY / PPM));
-                        if (powerUpManager.getCurrPowerUp() != null && powerUpManager.getCurrPowerUp().getState() == PowerUp.State.IN_USE) {
-                            powerUpManager.getCurrPowerUp().removeEffect();
-                            powerUpManager.getCurrPowerUp().setPowerUpState(PowerUp.State.TO_BE_REMOVED);
+                for (Ball ball : ballsManager.getBalls()) {
+                    if (ball == null) continue;
+
+                    if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
+                        for (Ball otherBall : ballsManager.getBallExcept(ball)) {
+                            if (otherBall == null) continue;
+                            if (fa.getBody() == otherBall.getBody() || fb.getBody() == otherBall.getBody()) {
+                                contact.setEnabled(false);
+                            }
+                        }
+                        // Position aléatoire à laquelle la balle va apparaître suite à une sortie de la balle
+                        float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
+                        if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
+                                fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
+                            if (ballsManager.getBallsCount() == 1) {
+                                moveBodyTaskList.add(new MoveBodyTask(ball.getBody(), camera.viewportWidth / 2 / PPM, randomY / PPM));
+                            } else if (ballsManager.getBallsCount() > 1) {
+                                ballsManager.removeBall(ball);
+                            }
+                        }
+                    }
+
+                    // À partir d’un point de contact, on s’occupe de la réflexion de la balle
+                    float contactPointY = contact.getWorldManifold().getPoints()[0].y;
+                    handleBallCollisionWith(ball, racketA, fa, fb, contactPointY);
+                    handleBallCollisionWith(ball, racketB, fa, fb, contactPointY);
+
+
+                    if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
+                        if (powerUpManager.getCurrPowerUp() != null &&
+                                (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
+                            powerUpManager.setPowerUpBodyActive(world, false);
+                            powerUpManager.getCurrPowerUp().setBall(ball);
+                            powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();
+                            powerUpManager.getCurrPowerUp().setPowerUpState(PowerUp.State.IN_USE);
                         }
                     }
                 }
-
-                // À partir d’un point de contact, on s’occupe de la réflexion de la balle
-                float contactPointY = contact.getWorldManifold().getPoints()[0].y;
-                handleBallCollisionWith(racketA, fa, fb, contactPointY);
-                handleBallCollisionWith(racketB, fa, fb, contactPointY);
-
-                if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
-                    if (powerUpManager.getCurrPowerUp() != null &&
-                            (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
-                        bodiesToRemove.add(powerUpManager.getCurrPowerUp().getBody());
-                        powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();
-                        powerUpManager.getCurrPowerUp().setPowerUpState(PowerUp.State.IN_USE);
-                    }
-                }
             }
+
 
             /**
              * Appelée lorsque deux corps Box2D cessent d’être en collision.
@@ -158,7 +169,7 @@ public class GameScreen extends AbstractScreen {
              * @param fb Le second corps Box2D du contact
              * @return true si la balle entre en collision avec la raquette donnée en paramètre
              */
-            private boolean isBallCollidingWith(Racket racket, Fixture fa, Fixture fb) {
+            private boolean isBallCollidingWith(Ball ball, Racket racket, Fixture fa, Fixture fb) {
                 return (fa.getBody() == ball.getBody() && fb.getBody() == racket.getPlayerBody()) ||
                         (fb.getBody() == ball.getBody() && fa.getBody() == racket.getPlayerBody());
             }
@@ -170,8 +181,8 @@ public class GameScreen extends AbstractScreen {
              * @param fb Le second corps Box2D du contact
              * @param contactPointY La coordonnée Y du point de contact entre la balle et la raquette
              */
-            private void handleBallCollisionWith(Racket racket, Fixture fa, Fixture fb, float contactPointY) {
-                if (isBallCollidingWith(racket, fa, fb)) {
+            private void handleBallCollisionWith(Ball ball, Racket racket, Fixture fa, Fixture fb, float contactPointY) {
+                if (isBallCollidingWith(ball, racket, fa, fb)) {
                     float collisionOffset = (contactPointY - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
                     ball.setVelocity(new Vector2(
                             -ball.getVelocity().x * (1 / Math.abs(collisionOffset) / 2),
@@ -194,14 +205,15 @@ public class GameScreen extends AbstractScreen {
         if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
             for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
                 moveBodyTask.move();                                                             // effectue la tâche de déplacement.
-
-                if (moveBodyTask.getBody() == ball.getBody()) {                                            // Si la tâche concerne la balle…
-                    ball.setVelocity(new Vector2(0, 0));
-                    Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
-                    ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
-                    nextDirectionRight = !nextDirectionRight;
+                for (Ball ball : ballsManager.getBalls()) {                                       // Pour chaque balle,
+                    if (ball == null) continue;
+                    if (moveBodyTask.getBody() == ball.getBody()) {                                            // Si la tâche concerne la balle…
+                        ball.setVelocity(new Vector2(0, 0));
+                        Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+                        ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+                        nextDirectionRight = !nextDirectionRight;
+                    }
                 }
-
             }
             moveBodyTaskList.clear();                                                            // Vide la liste de tâches
         }
@@ -217,30 +229,31 @@ public class GameScreen extends AbstractScreen {
 
         movePaddle(delta, racketA);                                                              // Déplace la raquette A
         movePaddle(delta, racketB);                                                              // Déplace la raquette B
-        ball.getBody().applyLinearImpulse(ball.getVelocity().add(ball.getVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), ball.getPosition(), true);
-        ball.setVelocity(ball.getVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
+        ballsManager.updateBalls(delta);
 
-        // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
-        world.rayCast(new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if (fixture.getBody() == racketA.getPlayerBody() &&
-                        (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                    // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                    updateDirectionAndContactPoint(racketA, point);
-                } else if (fixture.getBody() == racketB.getPlayerBody() &&
-                        (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                    // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                    updateDirectionAndContactPoint(racketB, point);
-                } else {
-                    direction = Vector2.Zero;
-                    contactPoint = Vector2.Zero;
+        for (final Ball ball : ballsManager.getBalls()) {
+            if (ball == null || ball.getBody() == null || !ball.getBody().isActive() || ball.getVelocity().isZero())
+                continue;
+            // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
+            world.rayCast(new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                    if (fixture.getBody() == racketA.getPlayerBody() &&
+                            (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                        // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                        updateDirectionAndContactPoint(ball, racketA, point);
+                    } else if (fixture.getBody() == racketB.getPlayerBody() &&
+                            (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                        // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                        updateDirectionAndContactPoint(ball, racketB, point);
+                    } else {
+                        direction = Vector2.Zero;
+                        contactPoint = Vector2.Zero;
+                    }
+                    return 0;
                 }
-
-                return 0;
-            }
-        }, ball.getPosition(), ball.getVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
-
+            }, ball.getPosition(), ball.getVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
+        }
         powerUpManager.update(delta);                                                            // Met à jour les power ups
 
         stage.act(delta);                                                                        // Met à jour le stage
@@ -248,7 +261,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void render(float delta) {
-        super.render(delta);                                                                                // Appelle la méthode render de la classe parente
+        super.render(delta);// Appelle la méthode render de la classe parente
 
         app.shapeBatch.begin(ShapeRenderer.ShapeType.Filled);                                                                           // Début du rendu des formes
         // ATTENTION: shapeBatch.begin() consomme beaucoup de ressources [À NE APPELER QU'EN CAS DE STRICTE NÉCESSITÉ]
@@ -257,12 +270,15 @@ public class GameScreen extends AbstractScreen {
                 racketA.getPlayerBody().getPosition().y * PPM - racketA.getRacketSize() / 2, Racket.getRacketThickness(), racketA.getRacketSize());     // Dessine la raquette A
         app.shapeBatch.rect(racketB.getPlayerBody().getPosition().x * PPM - Racket.getRacketThickness() / 2,
                 racketB.getPlayerBody().getPosition().y * PPM - racketB.getRacketSize() / 2, Racket.getRacketThickness(), racketB.getRacketSize());     // Dessine la raquette B
-        app.shapeBatch.circle(ball.getPosition().x * PPM, ball.getPosition().y * PPM, ball.getRadius());
+        for (Ball ball : ballsManager.getBalls()) {
+            if (ball == null) continue;
+            app.shapeBatch.circle(ball.getPosition().x * PPM, ball.getPosition().y * PPM, ball.getRadius());
+        }
         // Dessine la balle
         // ATTENTION: NE PAS OUBLIER DE FERMER LE shapeBatch.
         if (powerUpManager.getCurrPowerUp() != null && powerUpManager.getCurrPowerUp().getState() == PowerUp.State.UNTOUCHED) {
-            app.shapeBatch.setColor(Color.RED);
-            app.shapeBatch.circle(powerUpManager.getCurrPowerUp().getPosition().x, powerUpManager.getCurrPowerUp().getPosition().y, powerUpManager.getCurrPowerUp().getRadius());
+            app.shapeBatch.setColor(powerUpManager.getCurrPowerUp().getColor());
+            app.shapeBatch.circle(powerUpManager.getCurrPowerUp().getPosition().x * PPM, powerUpManager.getCurrPowerUp().getPosition().y * PPM, powerUpManager.getCurrPowerUp().getRadius());
         }
         app.shapeBatch.end();
 
@@ -278,6 +294,7 @@ public class GameScreen extends AbstractScreen {
         if (SHOW_DEBUG) {
             b2dr.render(world, camera.combined.cpy().scl(PPM));                                              // Dessine les formes Box2D
         }
+
         stage.draw();                                                                                        // Dessine le stage
     }
 
@@ -303,12 +320,18 @@ public class GameScreen extends AbstractScreen {
         b2dr.dispose();                                                              // Détruit le renderer Box2D
     }
 
-    public Ball getBall() {
-        return ball;
+    public World getWorld() {
+        return world;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 
     private void initArena() {
         createWalls();
+
+        ballsManager.createUnActiveBodies(world, camera);
 
         // Initialise les raquettes
         racketA = new Racket(world, camera, app.input.getPlayerA());
@@ -344,14 +367,13 @@ public class GameScreen extends AbstractScreen {
                 new Vector2(-35 / PPM, 0), new Vector2(0, 0));
 
         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
-        ball = new Ball(MathUtils.random() > .5 ? racketA : racketB, 8.0f);
-        Body ballBody = B2DBodyBuilder.createCircle(world, camera.viewportWidth / 2, randomY, ball.getRadius(), false, false, true, false);
-        ball.setBody(ballBody);
-        ball.setVelocity(new Vector2(0, 0));
-        Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f),
-                MathUtils.random(-.8f, .8f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
-        nextDirectionRight = randomImpulse.x < 0;
-        ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+        Ball ball = new Ball(MathUtils.random() > .5 ? racketA : racketB, 8.0f);
+        if (ballsManager.addBall(ball, new Vector2(camera.viewportWidth / 2 / PPM, randomY / PPM), new Vector2(0, 0))) {
+            Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f),
+                    MathUtils.random(-.8f, .8f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+            nextDirectionRight = randomImpulse.x < 0;
+            ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+        }
     }
 
     /**
@@ -387,7 +409,7 @@ public class GameScreen extends AbstractScreen {
      * @param racket Raquette avec laquelle la balle a entré en collision
      * @param point Point de contact de la balle avec la raquette
      */
-    private void updateDirectionAndContactPoint(Racket racket, Vector2 point) {
+    private void updateDirectionAndContactPoint(Ball ball, Racket racket, Vector2 point) {
         float collisionOffset = (point.y - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
         direction = new Vector2(
                 -ball.getVelocity().x * (1 / Math.abs(collisionOffset) / 2),

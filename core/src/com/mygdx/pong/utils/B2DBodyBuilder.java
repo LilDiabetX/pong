@@ -74,6 +74,20 @@ public final class B2DBodyBuilder {
         return body;
     }
 
+    public static void updateShapeForCircle(Body body, float radius, boolean isSensor) {
+        body.destroyFixture(body.getFixtureList().first());
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius / PPM);
+
+        FixtureDef fDef = new FixtureDef();
+        fDef.shape = shape;
+        fDef.density = 1f;
+        fDef.isSensor = isSensor;
+        body.createFixture(fDef);
+        shape.dispose();
+    }
+
     public static Body createChain(World world, Vector2[] vertices, boolean isStatic, boolean fixedRotation) {
         Body body;
 

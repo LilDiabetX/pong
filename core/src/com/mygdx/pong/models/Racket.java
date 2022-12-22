@@ -3,18 +3,16 @@ package com.mygdx.pong.models;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.pong.controllers.RacketController;
-import com.mygdx.pong.utils.B2DBodyBuilder;
 
 public class Racket {
-    private World world;
-    private Camera camera;
+    private final World world;
+    private final Camera camera;
     private Racket opponent;
     private static int counter;
     private final int playerID;
-    private RacketController player;
+    private final RacketController player;
     private Body playerBody;
     private Body goalBody;
     private float racketSize = 80.0f; // m

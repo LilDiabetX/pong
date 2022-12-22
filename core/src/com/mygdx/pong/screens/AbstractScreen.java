@@ -1,13 +1,10 @@
 package com.mygdx.pong.screens;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.pong.Application;
-import com.mygdx.pong.managers.GameScreenManager;
 
 public abstract class AbstractScreen implements Screen {
 

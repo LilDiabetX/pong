@@ -13,13 +13,13 @@ public class Application extends Game {
 	// Variables de l’application
 	public static String APP_TITLE = "Pong GDX";
 	public static double APP_VERSION = 0.1;
-	public static int APP_DESKTOP_WIDTH = 720;
-	public static int APP_DESKTOP_HEIGHT = 480;
+	public static int APP_DESKTOP_WIDTH = 1024;
+	public static int APP_DESKTOP_HEIGHT = 580;
 	public static int APP_FPS = 60;
 
 	// Variables du Jeu
-	public static int V_WIDTH = 720;
-	public static int V_HEIGHT = 480;
+	public static int V_WIDTH = 1024;
+	public static int V_HEIGHT = 580;
 
 	// Managers
 	public GameScreenManager gsm;

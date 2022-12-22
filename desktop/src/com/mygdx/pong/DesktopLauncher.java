@@ -2,7 +2,6 @@ package com.mygdx.pong;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.mygdx.pong.Application;
 
 import java.util.Locale;
 

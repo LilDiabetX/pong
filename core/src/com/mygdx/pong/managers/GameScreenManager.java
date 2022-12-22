@@ -4,7 +4,6 @@ import com.mygdx.pong.Application;
 import com.mygdx.pong.screens.AbstractScreen;
 import com.mygdx.pong.screens.GameScreen;
 
-import javax.swing.*;
 import java.util.HashMap;
 
 public final class GameScreenManager {

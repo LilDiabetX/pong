@@ -42,10 +42,6 @@ public class Application extends Game {
 		gsm = new GameScreenManager(this);
 	}
 
-	public GameScreen getGameScreen(){
-		return gsm.getGameScreen();
-	}
-
 	@Override
 	public void render () {
 		super.render();

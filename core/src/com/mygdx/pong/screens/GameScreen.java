@@ -102,6 +102,20 @@ public class GameScreen extends AbstractScreen {
                 Fixture fa = contact.getFixtureA();
                 Fixture fb = contact.getFixtureB();
 
+                if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
+                        fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
+                    for (Ball ball : ballsManager.getBalls()) {
+                        if (ball == null) continue;
+                        if (ball.getBody() == fa.getBody() || ball.getBody() == fb.getBody()) {
+                            if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
+                                racketB.addScore();
+                            } else {
+                                racketA.addScore();
+                            }
+                        }
+                    }
+                }
+
                 for (Ball ball : ballsManager.getBalls()) {
                     if (ball == null) continue;
 
@@ -116,13 +130,6 @@ public class GameScreen extends AbstractScreen {
                         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
                         if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
                                 fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
-
-                            if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
-                                racketB.addScore();
-                            } else {
-                                racketA.addScore();
-                            }
-
                             if (ballsManager.getBallsCount() == 1) {
                                 moveBodyTaskList.add(new MoveBodyTask(ball.getBody(), camera.viewportWidth / 2 / PPM, randomY / PPM));
                             } else if (ballsManager.getBallsCount() > 1) {

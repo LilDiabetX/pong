@@ -3,6 +3,9 @@ package com.mygdx.pong.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -44,6 +47,7 @@ public class GameScreen extends AbstractScreen {
      * Un objet permettant d’afficher les formes des corps Box2D (associés aux sprites) à l’écran
      */
     Box2DDebugRenderer b2dr;
+    BitmapFont font;
 
     boolean isPaused = false;
 
@@ -84,6 +88,9 @@ public class GameScreen extends AbstractScreen {
     public void show() {
         world = new World(gravity, true);                                                       // Crée un monde physique Box2D
         powerUpManager.setWorld(world);
+
+        setupBitMapFont();
+
         // Contrôle les collisions entre les corps Box2D du monde physique
         world.setContactListener(new ContactListener() {
             /**
@@ -109,6 +116,13 @@ public class GameScreen extends AbstractScreen {
                         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
                         if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
                                 fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
+
+                            if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
+                                racketB.addScore();
+                            } else {
+                                racketA.addScore();
+                            }
+
                             if (ballsManager.getBallsCount() == 1) {
                                 moveBodyTaskList.add(new MoveBodyTask(ball.getBody(), camera.viewportWidth / 2 / PPM, randomY / PPM));
                             } else if (ballsManager.getBallsCount() > 1) {
@@ -296,6 +310,12 @@ public class GameScreen extends AbstractScreen {
             Gdx.gl.glLineWidth(1);
         }
 
+        app.batch.begin();
+        font.draw(app.batch, String.format("%d", racketA.getScore()), Application.V_WIDTH / 2 - 150, Application.V_HEIGHT - 50);
+        font.draw(app.batch, String.format("%d", racketB.getScore()), Application.V_WIDTH / 2 + 150, Application.V_HEIGHT - 50);
+        app.batch.end();
+
+
         if (SHOW_DEBUG) {
             b2dr.render(world, camera.combined.cpy().scl(PPM));                                              // Dessine les formes Box2D
         }
@@ -321,6 +341,8 @@ public class GameScreen extends AbstractScreen {
     @Override
     public void dispose() {
         super.dispose();
+        ballsManager.dispose();
+        powerUpManager.dispose();
         world.dispose();                                                             // Détruit le monde physique Box2D
         b2dr.dispose();                                                              // Détruit le renderer Box2D
     }
@@ -336,6 +358,14 @@ public class GameScreen extends AbstractScreen {
         return camera;
     }
 
+    public void setupBitMapFont() {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Prototype.ttf"));
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = 100;
+        parameter.color = new Color(255, 255, 255, 0.5f);
+        font = generator.generateFont(parameter);
+        generator.dispose();
+    }
     private void initArena() {
         createWalls();
 

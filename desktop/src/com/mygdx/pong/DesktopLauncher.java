@@ -13,6 +13,13 @@ public class DesktopLauncher {
 		config.setTitle(String.format(Locale.ROOT, "%s v%.1f",Application.APP_TITLE, Application.APP_VERSION));
 		config.setWindowedMode(Application.APP_DESKTOP_WIDTH, Application.APP_DESKTOP_HEIGHT);
 		config.setResizable(true);
-		new Lwjgl3Application(new Application(), config);
+
+		new Lwjgl3Application(new Application(), config) {
+			@Override
+			public void exit() {
+				super.exit();
+				System.exit(0);
+			}
+		};
 	}
 }

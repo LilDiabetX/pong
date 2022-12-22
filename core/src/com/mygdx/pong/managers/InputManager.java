@@ -2,15 +2,20 @@ package com.mygdx.pong.managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.controllers.RacketController;
 import com.mygdx.pong.screens.GameScreen;
 
-public final class InputManager {
+public final class InputManager implements Disposable {
+
     public class Player implements RacketController {
+        private int score = 0;
         State state = State.IDLE;
-        @Override
         public State getState() { return state; }
+        public int getScore() { return score; }
+        public void incrementScore() { score++; }
+
     }
     private static InputManager manager = null;
     private final Application app;
@@ -66,5 +71,10 @@ public final class InputManager {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             ((GameScreen) app.gsm.getScreen(GameScreenManager.State.PLAY)).switchPause();
         }
+    }
+
+    @Override
+    public void dispose() {
+        manager = null;
     }
 }

@@ -1,12 +1,13 @@
 package com.mygdx.pong.managers;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.screens.AbstractScreen;
 import com.mygdx.pong.screens.GameScreen;
 
 import java.util.HashMap;
 
-public final class GameScreenManager {
+public final class GameScreenManager implements Disposable {
     private static GameScreenManager manager;
     private final Application app;
     private HashMap<State, AbstractScreen> gameScreens;

@@ -45,6 +45,10 @@ public class Racket {
         return player;
     }
 
+    public int getScore() {
+        return this.player.getScore();
+    }
+
     public boolean getIsInverted() {
         return isInverted;
     }
@@ -84,6 +88,10 @@ public class Racket {
     }
     public void setOpponent(Racket opponent) {
         this.opponent = opponent;
+    }
+
+    public void addScore() {
+        player.incrementScore();
     }
 
     public void flipIsInverted() {

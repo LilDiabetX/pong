@@ -3,10 +3,11 @@ package com.mygdx.pong.models;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.Timer;
 
-public abstract class PowerUp extends RandomEvent {
+public abstract class PowerUp extends RandomEvent implements Disposable {
 
     public enum State {
         UNTOUCHED, IN_USE, TO_BE_REMOVED
@@ -17,7 +18,7 @@ public abstract class PowerUp extends RandomEvent {
     private Ball ball;
     private Body body;
     private State powerUpState = State.UNTOUCHED;
-    private final Timer timer = new Timer();
+    public final Timer timer = new Timer();
     
     public PowerUp(Vector2 position, float radius, Color color) {
         super(position);
@@ -83,5 +84,10 @@ public abstract class PowerUp extends RandomEvent {
                     }
                 }, 15000
         );
+    }
+
+    public void dispose() {
+        getBody().getWorld().destroyBody(getBody());
+        timer.cancel();
     }
 }

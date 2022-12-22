@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.models.Ball;
 import com.mygdx.pong.utils.B2DBodyBuilder;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mygdx.pong.utils.B2DConstants.PPM;
 
-public class BallsManager {
+public class BallsManager implements Disposable {
     private static BallsManager manager;
     private World world;
     private final float MAX_BALL_NUM = 2;
@@ -155,6 +156,15 @@ public class BallsManager {
         for (int i = 0; i < this.balls.length; i++) {
             if (this.balls[i] != null) {
                 this.balls[i].update(delta);
+            }
+        }
+    }
+
+    public void dispose() {
+        for (int i = 0; i < this.balls.length; i++) {
+            if (this.balls[i] != null) {
+                this.balls[i].dispose();
+                this.balls[i] = null;
             }
         }
     }

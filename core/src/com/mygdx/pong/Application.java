@@ -1,6 +1,7 @@
 package com.mygdx.pong;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -50,7 +51,9 @@ public class Application extends Game {
 		super.dispose();							// L’ordre est important
 		batch.dispose();
 		shapeBatch.dispose();
+		input.dispose();
 		assets.dispose();
 		gsm.dispose();
+		Gdx.app.exit();
 	}
 }

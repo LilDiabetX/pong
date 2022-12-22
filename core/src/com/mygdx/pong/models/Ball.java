@@ -2,8 +2,9 @@ package com.mygdx.pong.models;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Disposable;
 
-public class Ball {
+public class Ball implements Disposable {
     private static int compteur = 0;
     private final int id;
     private final float INITIAL_BALL_ACCELERATION = .02f;                              // L’accélération de la balle (en m/s²)
@@ -63,7 +64,12 @@ public class Ball {
     }
 
     public void update(float delta) {
+        if (getBody() == null) return;
         getBody().applyLinearImpulse(getVelocity().add(getVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), getPosition(), true);
         setVelocity(getVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
+    }
+
+    public void dispose() {
+        body.getWorld().destroyBody(body);
     }
 }

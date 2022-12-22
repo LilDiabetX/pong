@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.models.PowerUp;
 import com.mygdx.pong.models.powerups.DoubleBall;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mygdx.pong.utils.B2DConstants.PPM;
 
-public final class PowerUpManager {
+public final class PowerUpManager implements Disposable {
     private static PowerUpManager manager;
     private final Application app;
     private final BallsManager ballsManager;
@@ -54,6 +55,13 @@ public final class PowerUpManager {
             manager = new PowerUpManager(app, ballsManager);
         }
         return manager;
+    }
+
+    public void dispose() {
+        if (currPowerUpBody != null) {
+            currPowerUp.dispose();
+            currPowerUp = null;
+        }
     }
 
     public PowerUp getCurrPowerUp() {

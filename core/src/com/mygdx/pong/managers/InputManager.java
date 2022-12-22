@@ -63,7 +63,7 @@ public final class InputManager {
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            app.gsm.getPlayScreen().pause();
+            ((GameScreen)app.gsm.getScreen(GameScreenManager.State.PLAY)).pause();
         }
     }
 }

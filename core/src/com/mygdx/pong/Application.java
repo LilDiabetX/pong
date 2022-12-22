@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.pong.managers.GameScreenManager;
 import com.mygdx.pong.managers.InputManager;
-import com.mygdx.pong.screens.GameScreen;
-
 
 public class Application extends Game {
 

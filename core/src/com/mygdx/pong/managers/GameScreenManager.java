@@ -1,6 +1,5 @@
 package com.mygdx.pong.managers;
 
-import com.badlogic.gdx.Game;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.screens.AbstractScreen;
 import com.mygdx.pong.screens.GameScreen;

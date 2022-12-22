@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.controllers.RacketController;
+import com.mygdx.pong.screens.GameScreen;
 
 public final class InputManager {
     public class Player implements RacketController {
@@ -60,6 +61,10 @@ public final class InputManager {
             playerB.state = RacketController.State.GOING_DOWN;
         } else if (playerB.state != RacketController.State.IDLE) {
             playerB.state = RacketController.State.IDLE;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            ((GameScreen) app.gsm.getScreen(GameScreenManager.State.PLAY)).switchPause();
         }
     }
 }

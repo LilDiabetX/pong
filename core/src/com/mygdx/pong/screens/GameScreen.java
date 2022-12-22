@@ -45,6 +45,8 @@ public class GameScreen extends AbstractScreen {
      */
     Box2DDebugRenderer b2dr;
 
+    boolean isPaused = false;
+
     /**
      * Une liste de tâches à effectuer sur les corps Box2D (absolument nécessaire pour éviter les erreurs de concurrence)
      */
@@ -201,61 +203,64 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void update(float delta) {
-        world.step(1f / Application.APP_FPS, 6, 2);             // Met à jour le monde physique Box2D
-        if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
-            for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
-                moveBodyTask.move();                                                             // effectue la tâche de déplacement.
-                for (Ball ball : ballsManager.getBalls()) {                                       // Pour chaque balle,
-                    if (ball == null) continue;
-                    if (moveBodyTask.getBody() == ball.getBody()) {                                            // Si la tâche concerne la balle…
-                        ball.setVelocity(new Vector2(0, 0));
-                        Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
-                        ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
-                        nextDirectionRight = !nextDirectionRight;
+        if (!isPaused) {
+            world.step(1f / Application.APP_FPS, 6, 2);             // Met à jour le monde physique Box2D
+            if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
+                for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
+                    moveBodyTask.move();                                                             // effectue la tâche de déplacement.
+                    for (Ball ball : ballsManager.getBalls()) {                                       // Pour chaque balle,
+                        if (ball == null) continue;
+                        if (moveBodyTask.getBody() == ball.getBody()) {                                            // Si la tâche concerne la balle…
+                            ball.setVelocity(new Vector2(0, 0));
+                            Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+                            ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+                            nextDirectionRight = !nextDirectionRight;
+                        }
                     }
                 }
+                moveBodyTaskList.clear();                                                            // Vide la liste de tâches
             }
-            moveBodyTaskList.clear();                                                            // Vide la liste de tâches
-        }
 
-        if (!bodiesToRemove.isEmpty()) {
-            for (Body body : bodiesToRemove) {
-                world.destroyBody(body);
+            if (!bodiesToRemove.isEmpty()) {
+                for (Body body : bodiesToRemove) {
+                    world.destroyBody(body);
+                }
+                bodiesToRemove.clear();
             }
-            bodiesToRemove.clear();
         }
 
         app.input.handleInput(delta);                                                            // Gère les entrées de l’utilisateur
 
-        movePaddle(delta, racketA);                                                              // Déplace la raquette A
-        movePaddle(delta, racketB);                                                              // Déplace la raquette B
-        ballsManager.updateBalls(delta);
+        if (!isPaused) {
+            movePaddle(delta, racketA);                                                              // Déplace la raquette A
+            movePaddle(delta, racketB);                                                              // Déplace la raquette B
+            ballsManager.updateBalls(delta);
 
-        for (final Ball ball : ballsManager.getBalls()) {
-            if (ball == null || ball.getBody() == null || !ball.getBody().isActive() || ball.getVelocity().isZero())
-                continue;
-            // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
-            world.rayCast(new RayCastCallback() {
-                @Override
-                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                    if (fixture.getBody() == racketA.getPlayerBody() &&
-                            (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                        // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                        updateDirectionAndContactPoint(ball, racketA, point);
-                    } else if (fixture.getBody() == racketB.getPlayerBody() &&
-                            (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
-                        // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
-                        updateDirectionAndContactPoint(ball, racketB, point);
-                    } else {
-                        direction = Vector2.Zero;
-                        contactPoint = Vector2.Zero;
+            for (final Ball ball : ballsManager.getBalls()) {
+                if (ball == null || ball.getBody() == null || !ball.getBody().isActive() || ball.getVelocity().isZero())
+                    continue;
+                // On envoie un rayon à partir de la balle dans la direction de la vitesse de la balle pour identifier si elle se dirige vers une des raquettes.
+                world.rayCast(new RayCastCallback() {
+                    @Override
+                    public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                        if (fixture.getBody() == racketA.getPlayerBody() &&
+                                (racketA.getPlayerBody().getPosition().dst2(racketA.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                            // Si le rayon rencontre la raquette A et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                            updateDirectionAndContactPoint(ball, racketA, point);
+                        } else if (fixture.getBody() == racketB.getPlayerBody() &&
+                                (racketB.getPlayerBody().getPosition().dst2(racketB.getPrevPosition()) > 0.01f || direction == Vector2.Zero)) {
+                            // Si le rayon rencontre la raquette B et si la balle est proche de cette dernière, on met à jour la direction opposée à la collision et le point de contact.
+                            updateDirectionAndContactPoint(ball, racketB, point);
+                        } else {
+                            direction = Vector2.Zero;
+                            contactPoint = Vector2.Zero;
+                        }
+                        return 0;
                     }
-                    return 0;
-                }
-            }, ball.getPosition(), ball.getVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
+                }, ball.getPosition(), ball.getVelocity().nor().scl(RAY_DISTANCE).add(ball.getPosition()));
+            }
+            powerUpManager.update(delta);                                                            // Met à jour les power ups
         }
-        powerUpManager.update(delta);                                                            // Met à jour les power ups
-
         stage.act(delta);                                                                        // Met à jour le stage
     }
 
@@ -320,6 +325,9 @@ public class GameScreen extends AbstractScreen {
         b2dr.dispose();                                                              // Détruit le renderer Box2D
     }
 
+    public void switchPause() {
+        isPaused = !isPaused;
+    }
     public World getWorld() {
         return world;
     }

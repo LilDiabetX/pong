@@ -46,7 +46,6 @@ public final class GameScreenManager {
 
     public AbstractScreen getScreen(State screen) {
         return this.gameScreens.get(screen);
-    }
 
     public void dispose() {
         for (AbstractScreen screen : this.gameScreens.values()) {

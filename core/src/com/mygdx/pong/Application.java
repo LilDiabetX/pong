@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.pong.managers.GameScreenManager;
 import com.mygdx.pong.managers.InputManager;
 
-
 public class Application extends Game {
 
 	// Variables de l’application

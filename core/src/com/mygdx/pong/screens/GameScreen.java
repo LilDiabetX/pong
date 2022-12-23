@@ -20,6 +20,7 @@ import com.mygdx.pong.models.Racket;
 import com.mygdx.pong.utils.B2DBodyBuilder;
 import com.mygdx.pong.utils.B2DJointBuilder;
 import com.mygdx.pong.utils.MoveBodyTask;
+import com.badlogic.gdx.audio.Sound;
 
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -53,6 +54,10 @@ public class GameScreen extends AbstractScreen {
 
     boolean isPaused = false;
 
+    Sound choc = Gdx.audio.newSound(Gdx.files.internal("Sounds/sonChocPong.wav"));
+    Sound musique = Gdx.audio.newSound(Gdx.files.internal("Sounds/musiquePong.wav"));
+    Sound point = Gdx.audio.newSound(Gdx.files.internal("Sounds/sonPointPong.wav"));
+
     /**
      * Une liste de tâches à effectuer sur les corps Box2D (absolument nécessaire pour éviter les erreurs de concurrence)
      */
@@ -80,7 +85,7 @@ public class GameScreen extends AbstractScreen {
     private boolean nextDirectionRight = true;
     public GameScreen(final Application app) {
         super(app);
-
+        musique.setLooping(musique.play(1.0f), true);
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
         this.camera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);                // Définit la taille de la caméra
         this.b2dr = new Box2DDebugRenderer();
@@ -109,7 +114,7 @@ public class GameScreen extends AbstractScreen {
                     if (ball == null) continue;
                     if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
                         if (fa.getBody() == wallBody || fb.getBody() == wallBody) {
-                            // POUR BENJAMIN
+                            choc.play(1.0f);
                         }
                     }
                 }
@@ -121,11 +126,11 @@ public class GameScreen extends AbstractScreen {
                         if (ball.getBody() == fa.getBody() || ball.getBody() == fb.getBody()) {
                             if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
                                 // Si la balle est dans le but de la raquette A
-                                // POUR BENJAMIN
+                                point.play(1.0f);
                                 racketB.addScore();
                             } else {
                                 // Si la balle est dans le but de la raquette B
-                                // POUR BENJAMIN
+                                point.play(1.0f);
                                 racketA.addScore();
                             }
                         }
@@ -164,7 +169,6 @@ public class GameScreen extends AbstractScreen {
                         if (powerUpManager.getCurrPowerUp() != null &&
                                 (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
                             // Collision de la balle avec le power-up
-                            // POUR BENJAMIN
                             powerUpManager.setPowerUpBodyActive(world, false);
                             powerUpManager.getCurrPowerUp().setBall(ball);
                             powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();
@@ -224,6 +228,7 @@ public class GameScreen extends AbstractScreen {
              */
             private void handleCollisionBetween(Ball ball, Racket racket, Fixture fa, Fixture fb, float contactPointY) {
                 if (isColliding(ball, racket, fa, fb)) {
+                    choc.play(1.0f);
                     float collisionOffset = (contactPointY - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
                     ball.setVelocity(new Vector2(
                             -ball.getVelocity().x * (1 / Math.abs(collisionOffset) / 2),

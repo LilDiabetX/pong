@@ -109,7 +109,7 @@ public class GameScreen extends AbstractScreen {
                     if (ball == null) continue;
                     if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
                         if (fa.getBody() == wallBody || fb.getBody() == wallBody) {
-
+                            // POUR BENJAMIN
                         }
                     }
                 }
@@ -121,9 +121,11 @@ public class GameScreen extends AbstractScreen {
                         if (ball.getBody() == fa.getBody() || ball.getBody() == fb.getBody()) {
                             if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
                                 // Si la balle est dans le but de la raquette A
+                                // POUR BENJAMIN
                                 racketB.addScore();
                             } else {
                                 // Si la balle est dans le but de la raquette B
+                                // POUR BENJAMIN
                                 racketA.addScore();
                             }
                         }
@@ -161,6 +163,8 @@ public class GameScreen extends AbstractScreen {
                     if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
                         if (powerUpManager.getCurrPowerUp() != null &&
                                 (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
+                            // Collision de la balle avec le power-up
+                            // POUR BENJAMIN
                             powerUpManager.setPowerUpBodyActive(world, false);
                             powerUpManager.getCurrPowerUp().setBall(ball);
                             powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();
@@ -341,8 +345,8 @@ public class GameScreen extends AbstractScreen {
         }
 
         app.batch.begin();
-        font.draw(app.batch, String.format("%d", racketA.getScore()), Application.V_WIDTH / 2 - 150, Application.V_HEIGHT - 50);
-        font.draw(app.batch, String.format("%d", racketB.getScore()), Application.V_WIDTH / 2 + 150, Application.V_HEIGHT - 50);
+        font.draw(app.batch, String.format("%d", racketA.getScore()), Application.V_WIDTH / 2f - 150, Application.V_HEIGHT - 50);
+        font.draw(app.batch, String.format("%d", racketB.getScore()), Application.V_WIDTH / 2f + 150, Application.V_HEIGHT - 50);
         app.batch.end();
 
 
@@ -379,13 +383,6 @@ public class GameScreen extends AbstractScreen {
 
     public void switchPause() {
         isPaused = !isPaused;
-    }
-    public World getWorld() {
-        return world;
-    }
-
-    public OrthographicCamera getCamera() {
-        return camera;
     }
 
     public void setupBitMapFont() {

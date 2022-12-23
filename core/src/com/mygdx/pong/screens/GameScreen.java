@@ -59,6 +59,7 @@ public class GameScreen extends AbstractScreen {
     ArrayList<MoveBodyTask> moveBodyTaskList = new ArrayList<>();
     ArrayList<Body> bodiesToRemove = new ArrayList<>();
 
+    private Body wallBody;
     /**
      * Une des raquettes du jeu
      */
@@ -103,14 +104,26 @@ public class GameScreen extends AbstractScreen {
                 Fixture fa = contact.getFixtureA();
                 Fixture fb = contact.getFixtureB();
 
+                // Si la balle entre en collision avec un mur
+                for (Ball ball : ballsManager.getBalls()) {
+                    if (ball == null) continue;
+                    if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
+                        if (fa.getBody() == wallBody || fb.getBody() == wallBody) {
+
+                        }
+                    }
+                }
+
                 if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
                         fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
                     for (Ball ball : ballsManager.getBalls()) {
                         if (ball == null) continue;
                         if (ball.getBody() == fa.getBody() || ball.getBody() == fb.getBody()) {
                             if (fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody()) {
+                                // Si la balle est dans le but de la raquette A
                                 racketB.addScore();
                             } else {
+                                // Si la balle est dans le but de la raquette B
                                 racketA.addScore();
                             }
                         }
@@ -141,8 +154,8 @@ public class GameScreen extends AbstractScreen {
 
                     // À partir d’un point de contact, on s’occupe de la réflexion de la balle
                     float contactPointY = contact.getWorldManifold().getPoints()[0].y;
-                    handleBallCollisionWith(ball, racketA, fa, fb, contactPointY);
-                    handleBallCollisionWith(ball, racketB, fa, fb, contactPointY);
+                    handleCollisionBetween(ball, racketA, fa, fb, contactPointY);
+                    handleCollisionBetween(ball, racketB, fa, fb, contactPointY);
 
 
                     if (fa.getBody() == ball.getBody() || fb.getBody() == ball.getBody()) {
@@ -193,7 +206,7 @@ public class GameScreen extends AbstractScreen {
              * @param fb Le second corps Box2D du contact
              * @return true si la balle entre en collision avec la raquette donnée en paramètre
              */
-            private boolean isBallCollidingWith(Ball ball, Racket racket, Fixture fa, Fixture fb) {
+            private boolean isColliding(Ball ball, Racket racket, Fixture fa, Fixture fb) {
                 return (fa.getBody() == ball.getBody() && fb.getBody() == racket.getPlayerBody()) ||
                         (fb.getBody() == ball.getBody() && fa.getBody() == racket.getPlayerBody());
             }
@@ -205,8 +218,8 @@ public class GameScreen extends AbstractScreen {
              * @param fb Le second corps Box2D du contact
              * @param contactPointY La coordonnée Y du point de contact entre la balle et la raquette
              */
-            private void handleBallCollisionWith(Ball ball, Racket racket, Fixture fa, Fixture fb, float contactPointY) {
-                if (isBallCollidingWith(ball, racket, fa, fb)) {
+            private void handleCollisionBetween(Ball ball, Racket racket, Fixture fa, Fixture fb, float contactPointY) {
+                if (isColliding(ball, racket, fa, fb)) {
                     float collisionOffset = (contactPointY - racket.getPlayerBody().getPosition().y) / (racket.getRacketSize() / 2 / PPM);
                     ball.setVelocity(new Vector2(
                             -ball.getVelocity().x * (1 / Math.abs(collisionOffset) / 2),
@@ -450,7 +463,7 @@ public class GameScreen extends AbstractScreen {
         verts[2] = new Vector2(camera.viewportWidth / PPM, (camera.viewportHeight - 1f) / PPM);
         verts[3] = new Vector2(1f / PPM, (camera.viewportHeight - 1f) / PPM);
         verts[4] = new Vector2(1f / PPM, 0);
-        B2DBodyBuilder.createChain(world, verts, true, true);
+        wallBody = B2DBodyBuilder.createChain(world, verts, true, true);
     }
 
     /**

@@ -10,17 +10,12 @@ import com.mygdx.pong.models.Ball;
 import com.mygdx.pong.utils.B2DBodyBuilder;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static com.mygdx.pong.utils.B2DConstants.PPM;
 
 public class BallsManager implements Disposable {
     private static BallsManager manager;
     private World world;
-    private final float MAX_BALL_NUM = 2;
     private int ballsCount;
     private Ball[] balls;
     private ArrayList<Body> ballBodiesUnActive;
@@ -73,14 +68,13 @@ public class BallsManager implements Disposable {
                     if (!worldFinal.isLocked()) {
                         ballBody.setTransform(position, 0);
                         ballBody.setActive(true);
-
+                        ball.setBody(ballBody);
+                        ball.setVelocity(velocity);
+                        ballBody.setLinearVelocity(velocity);
                     }
                 }
             };
             executor.schedule(task, 0, TimeUnit.MILLISECONDS);
-            ball.setBody(ballBody);
-            ball.setVelocity(velocity);
-            ballBody.setLinearVelocity(velocity);
             this.ballBodiesUnActive.remove(0);
 
             for (int i = 0; i < this.balls.length; i++) {

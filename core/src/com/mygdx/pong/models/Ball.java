@@ -1,5 +1,6 @@
 package com.mygdx.pong.models;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Disposable;
@@ -7,7 +8,7 @@ import com.badlogic.gdx.utils.Disposable;
 public class Ball implements Disposable {
     private static int compteur = 0;
     private final int id;
-    private final float INITIAL_BALL_ACCELERATION = .02f;                              // L’accélération de la balle (en m/s²)
+    private final float INITIAL_BALL_ACCELERATION = 6f;                              // L’accélération de la balle (en m/s²)
     private final float MAXIMUM_BALL_SPEED = 60f;
     private float radius = 8.0f; // m
     private Body body;
@@ -32,11 +33,19 @@ public class Ball implements Disposable {
     }
 
     public Vector2 getPosition() {
-        return body.getPosition();
+        if (body != null) {
+            return body.getPosition();
+        } else {
+            return new Vector2(0, 0);
+        }
     }
 
     public Vector2 getVelocity() {
-        return body.getLinearVelocity();
+        if (body != null) {
+            return body.getLinearVelocity();
+        } else {
+            return new Vector2(0, 0);
+        }
     }
 
     public Racket getRacketHitBy() {
@@ -65,7 +74,7 @@ public class Ball implements Disposable {
 
     public void update(float delta) {
         if (getBody() == null) return;
-        getBody().applyLinearImpulse(getVelocity().add(getVelocity().nor().scl(INITIAL_BALL_ACCELERATION * delta)), getPosition(), true);
+        setVelocity(getVelocity().add(getVelocity().nor().scl(INITIAL_BALL_ACCELERATION)));
         setVelocity(getVelocity().clamp(0, MAXIMUM_BALL_SPEED));           // Limite la vitesse de la balle
     }
 

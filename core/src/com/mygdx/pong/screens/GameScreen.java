@@ -22,6 +22,8 @@ import com.mygdx.pong.utils.B2DJointBuilder;
 import com.mygdx.pong.utils.MoveBodyTask;
 
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static com.mygdx.pong.utils.B2DConstants.PPM;
 
@@ -70,8 +72,7 @@ public class GameScreen extends AbstractScreen {
     private final boolean SHOW_DEBUG = false;
     private Vector2 direction = Vector2.Zero;
     private Vector2 contactPoint = Vector2.Zero;
-    private final float INITIAL_BALL_SPEED_FACTOR = 2f;                                // La vitesse initiale de la balle (en m/s)
-
+    private final float INITIAL_BALL_SPEED_FACTOR = 10f;                                // La vitesse initiale de la balle (en m/s)
     private final float BALL_SPAWN_OFFSET = 120.0f;
     private final float RAY_DISTANCE = 8f;
 
@@ -229,12 +230,21 @@ public class GameScreen extends AbstractScreen {
             if (!moveBodyTaskList.isEmpty()) {                                                       // Si la liste de tâches n’est pas vide,
                 for (MoveBodyTask moveBodyTask : moveBodyTaskList) {                                 // pour chaque tâche,
                     moveBodyTask.move();                                                             // effectue la tâche de déplacement.
-                    for (Ball ball : ballsManager.getBalls()) {                                       // Pour chaque balle,
+                    for (final Ball ball : ballsManager.getBalls()) {                                       // Pour chaque balle,
                         if (ball == null) continue;
                         if (moveBodyTask.getBody() == ball.getBody()) {                                            // Si la tâche concerne la balle…
-                            ball.setVelocity(new Vector2(0, 0));
-                            Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
-                            ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+                            final Vector2 randomImpulse = new Vector2(nextDirectionRight ? 1 : -1, MathUtils.random(-.6f, .6f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+                            ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+                            Runnable task = new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (ball.getBody() != null) {
+                                        ball.getBody().setLinearVelocity(randomImpulse);
+                                        ball.setVelocity(randomImpulse);
+                                    }
+                                }
+                            };
+                            executor.schedule(task, 0, TimeUnit.MILLISECONDS);
                             nextDirectionRight = !nextDirectionRight;
                         }
                     }
@@ -412,12 +422,21 @@ public class GameScreen extends AbstractScreen {
                 new Vector2(-35 / PPM, 0), new Vector2(0, 0));
 
         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
-        Ball ball = new Ball(MathUtils.random() > .5 ? racketA : racketB, 8.0f);
-        if (ballsManager.addBall(ball, new Vector2(camera.viewportWidth / 2 / PPM, randomY / PPM), new Vector2(0, 0))) {
-            Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f),
-                    MathUtils.random(-.8f, .8f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+        final Ball ball = new Ball(MathUtils.random() > .5 ? racketA : racketB, 8.0f);
+        final Vector2 randomImpulse = new Vector2(MathUtils.random(0, 1f) > 0.5f ? MathUtils.random(0.5f, 1f) : MathUtils.random(-1f, -0.5f),
+                MathUtils.random(-.8f, .8f)).nor().scl(INITIAL_BALL_SPEED_FACTOR);
+        if (ballsManager.addBall(ball, new Vector2(camera.viewportWidth / 2 / PPM, randomY / PPM), randomImpulse)) {
             nextDirectionRight = randomImpulse.x < 0;
-            ball.getBody().applyLinearImpulse(randomImpulse, ball.getPosition(), true);
+            ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    if (ball.getBody() != null) {
+                        ball.setVelocity(randomImpulse);
+                    }
+                }
+            };
+            executor.schedule(task, 0, TimeUnit.MILLISECONDS);
         }
     }
 

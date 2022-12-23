@@ -7,8 +7,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.pong.models.PowerUp;
 import com.mygdx.pong.models.Racket;
 import com.mygdx.pong.utils.B2DBodyBuilder;
+import com.badlogic.gdx.audio.Sound;
 
 public class PaddleResize extends PowerUp {
+    Sound bonus = Gdx.audio.newSound(Gdx.files.internal("Sounds/bonusPong.wav"));
     private final World world;
     public enum State {
         BIGGER, SMALLER
@@ -23,6 +25,7 @@ public class PaddleResize extends PowerUp {
     }
     @Override
     public void applyEffect() {
+        bonus.play(1.0f);
         appliedTo = getBall().getRacketHitBy();
         if (powerUpState == State.BIGGER) {
             appliedTo.setRacketSize(appliedTo.getRacketSize() * 1.5f);
@@ -34,6 +37,7 @@ public class PaddleResize extends PowerUp {
 
     @Override
     public void removeEffect() {
+        bonus.play(1.0f);
         if (powerUpState == State.BIGGER) {
             appliedTo.setRacketSize(appliedTo.getRacketSize() / 1.5f);
         } else {

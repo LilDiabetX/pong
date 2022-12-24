@@ -8,29 +8,23 @@ import javax.sound.sampled.AudioInputStream;
 
 public class Sound{
 
-	private Clip clip;
-	private URL soundURL[] = new URL[10];
+	private Clip clip; // le Clip permet de précharger les sons qui seront éventuellement joués afin de pouvoir les jouer n'importe quand et en boucle si besoin
+	private URL soundURL[] = new URL[10]; // tableau d'URL dans lequel on placera les chemins relatifs des sons à jouer
+	
 
+	
+	// initialise le tableau d'URL avec les sons à jouer. Il n'y en a que deux pour l'instant, d'autres seront à ajouter en temps voulu
 	public Sound(){
 		ClassLoader loader = Sound.class.getClassLoader();
 		soundURL[0]=loader.getResource("sounds/sonPointPong.wav");
 		soundURL[1]=loader.getResource("sounds/sonChocPong.wav");
-		/*
-		try{
-			soundURL[0]=new File("resources/sonPointPong.wav").toURI().toURL();
-		}
-		catch(Exception e){
-			System.out.println(e);
-		}
-		*/
 	}
 
+	// méthode permettant de définir le son à jouer
 	public void setFile(int i){
 		try{
 			URL u = soundURL[i];
-			System.out.println(u);
 			AudioInputStream ais = AudioSystem.getAudioInputStream(u);
-			System.out.println(ais);
 			this.clip=AudioSystem.getClip();
 			this.clip.open(ais);
 		}
@@ -39,14 +33,17 @@ public class Sound{
 		}
 	}
 
+	// méthode jouant une fois le son définit avec setFile(i)
 	public void play(){
 		this.clip.start();
 	}
 
+	// méthode jouant en boucle le son définit avec setFile(i)
 	public void loop(){
 		this.clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
+	// méthode stopant la boucle initiée avec loop()
 	public void stop(){
 		this.clip.stop();
 	}

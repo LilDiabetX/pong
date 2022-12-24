@@ -1,4 +1,10 @@
 package model;
+import java.time.chrono.ThaiBuddhistChronology;
+import java.util.ArrayList;
+import model.Countdown;
+
+import gui.GameView;
+import javafx.animation.AnimationTimer;
 
 import model.Countdown;
 
@@ -7,28 +13,31 @@ public class Court {
     private Sound sound = new Sound();
 
     // instance parameters
-    private final RacketController playerA, playerB;
+    private RacketController playerA, playerB;
     private final double width, height; // m
-    private final double racketSpeed = 300.0; // m/s
-    private final double racketSize = 100.0; // m
-    private final double ballRadius = 10.0; // m
     // instance state
-    private double racketA; // m
-    private double racketB; // m
-    private double ballX, ballY; // m
-    private double ballSpeedX, ballSpeedY; // m
+    private ArrayList<Ball> balls;
+    private Racket racketA, racketB;
+
+    private int scoreA, scoreB;
+    
     private Countdown cd;
 
-    public Court(RacketController playerA, RacketController playerB, double width, double height) {
-        this.playerA = playerA;
-        this.playerB = playerB;
+    private boolean isEnd = false;
+ 
+
+    public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
         this.height = height;
-        cd=new Countdown(1,0);
+        this.playerA=playerA;
+        this.playerB=playerB;
+
+        cd = new Countdown(0, 10);
         reset();
       
         
     }
+
 
     public void playSFX(int i){
         this.sound.setFile(i);
@@ -43,101 +52,136 @@ public class Court {
         return height;
     }
 
-    public double getRacketSize() {
-        return racketSize;
-    }
-
-    public double getRacketA() {
+    public Racket getRacketA() {
         return racketA;
     }
 
-    public double getRacketB() {
+    public Racket getRacketB() {
         return racketB;
     }
 
-    public double getBallX() {
-        return ballX;
+    public ArrayList<Ball> getBalls() {
+        return this.balls;
     }
 
-    public double getBallY() {
-        return ballY;
+    public RacketController getPlayerA(){
+        return playerA;
+    }
+
+    public RacketController getPlayerB(){
+        return playerB;
     }
     
     public Countdown getCd(){
         return cd;
     }
 
+     
+    public boolean isEnd() {return this.isEnd;}
+
+
+    public int getScoreA() { return scoreA; }
+
+    public int getScoreB() { return scoreB; }
+
     public void update(double deltaT) {
 
-        switch (playerA.getState()) {
-            case GOING_UP:
-                racketA -= racketSpeed * deltaT;
-                if (racketA < 0.0) racketA = 0.0;
-                break;
-            case IDLE:
-                break;
-            case GOING_DOWN:
-                racketA += racketSpeed * deltaT;
-                if (racketA + racketSize > height) racketA = height - racketSize;
-                break;
+        Racket[] racketTab = {racketA, racketB};
+        for (Racket racket : racketTab) {
+            switch (racket.getPlayer().getState()) {
+                case GOING_UP:
+                    racket.setRacketPos(racket.getRacketPos()- racket.getRacketSpeed() * deltaT);
+                    if (racket.getRacketPos() < 0.0) racket.setRacketPos(0.0);
+                    break;
+                case IDLE:
+                    break;
+                case GOING_DOWN:
+                    racket.setRacketPos(racket.getRacketPos()+ racket.getRacketSpeed() * deltaT);
+                    if (racket.getRacketPos() + racket.getRacketSize() > height) racket.setRacketPos(height - racket.getRacketSize());
+                    break;
+            }
         }
-        switch (playerB.getState()) {
-            case GOING_UP:
-                racketB -= racketSpeed * deltaT;
-                if (racketB < 0.0) racketB = 0.0;
-                break;
-            case IDLE:
-                break;
-            case GOING_DOWN:
-                racketB += racketSpeed * deltaT;
-                if (racketB + racketSize > height) racketB = height - racketSize;
-                break;
+
+        if (updateBalls(deltaT)) {
+            scoreA = playerA.getScore();
+            scoreB = playerB.getScore();
+            if(balls.size() > 1) {
+                for (Ball b : balls) {
+                    if (b.getHasScored()) {
+                        b.setHasScored(false);
+                        balls.remove(b);
+                    }
+                }
+            } else {
+                reset();
+            }
         }
-        if (updateBall(deltaT)) reset();
     }
 
-
     /**
-     * @return true if a player lost
+     * @return true if a player lost a point
      */
-    private boolean updateBall(double deltaT) {
-        // first, compute possible next position if nothing stands in the way
-        double nextBallX = ballX + deltaT * ballSpeedX;
-        double nextBallY = ballY + deltaT * ballSpeedY;
-        // next, see if the ball would meet some obstacle
-        if (nextBallY < 0 || nextBallY > height) {
-            ballSpeedY = -ballSpeedY;
-            nextBallY = ballY + deltaT * ballSpeedY;
-            playSFX(1);
+    private boolean updateBalls(double deltaT) {
+        for (Ball ball : balls) {
+            if(updateBall(ball, deltaT)) return true;
         }
-        if ((nextBallX < 0 && nextBallY > racketA && nextBallY < racketA + racketSize)
-                || (nextBallX > width && nextBallY > racketB && nextBallY < racketB + racketSize)) {
-            playSFX(1);
-            ballSpeedX = -ballSpeedX;
-            nextBallX = ballX + deltaT * ballSpeedX;
-
-        } else if (nextBallX < 0) {
-            playSFX(0);
-            return true;
-        } else if (nextBallX > width) {
-            playSFX(0);
-            return true;
-        }
-        ballX = nextBallX;
-        ballY = nextBallY;
         return false;
     }
 
-    public double getBallRadius() {
-        return ballRadius;
+
+    private boolean updateBall(Ball ball, double deltaT) {
+        // first, compute possible next position if nothing stands in the way.
+        double nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+        double nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
+        // next, see if the ball would meet some obstacle
+        if (nextBallY < 0 || nextBallY > height) {
+            ball.setBallSpeedY(-ball.getBallSpeedY());
+            nextBallY = ball.getBallY() + deltaT * ball.getBallSpeedY();
+            playSFX(1);
+        }
+        if ((nextBallX < 0 && nextBallY > racketA.getRacketPos() && nextBallY < racketA.getRacketPos() + racketA.getRacketSize())) { //si on touche la raquette de gauche
+            ball.setBallSpeedX(-ball.getBallSpeedX()+20); //on change le sens de la vitesse horizontale et on l'augmente de 20
+            ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
+            nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+            ball.invertLastHitBy();
+            playSFX(1);
+        } else if ((nextBallX > width && nextBallY > racketB.getRacketPos() && nextBallY < racketB.getRacketPos() + racketB.getRacketSize())) { //si on touche la raquette de droite
+            ball.setBallSpeedX(-ball.getBallSpeedX()-20); //on change le sens de la vitesse horizontale et on l'augmente de 20
+            ball.setBallSpeedY(ball.getBallSpeedY()+20); //on ajoute 20 à la vitesse verticale
+            nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
+            ball.invertLastHitBy();
+            playSFX(1);
+
+        } else if (nextBallX < 0) {
+            playerB.incrementScore();
+            ball.setHasScored(true);
+            playSFX(0);
+            return true;
+        } else if (nextBallX > width) {
+            playerA.incrementScore();
+            ball.setHasScored(true);
+            playSFX(0);
+            return true;
+        }
+        ball.setBallX(nextBallX);
+        ball.setBallY(nextBallY);
+        return false;
     }
 
-    void reset() {
-        this.racketA = height / 2;
-        this.racketB = height / 2;
-        this.ballSpeedX = 200.0;
-        this.ballSpeedY = 200.0;
-        this.ballX = width / 2;
-        this.ballY = height / 2;
+
+    void reset(){
+        if (cd.isEnd()) {
+            this.isEnd = true;
+        } else {
+            this.racketA = new Racket(playerA,this.height/2);
+            this.racketB = new Racket(playerB,this.height/2);
+            this.balls = new ArrayList<Ball>();
+            this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+        }
+    }
+
+
+    void addBall(Ball ball) {
+        balls.add(ball);
     }
 }

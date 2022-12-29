@@ -1,7 +1,5 @@
 package model;
 import java.time.chrono.ThaiBuddhistChronology;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.ArrayList;
 
 import gui.GameView;

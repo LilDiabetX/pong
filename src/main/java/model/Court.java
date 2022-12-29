@@ -1,9 +1,12 @@
 package model;
 import java.time.chrono.ThaiBuddhistChronology;
 import java.util.ArrayList;
+import model.Countdown;
 
 import gui.GameView;
 import javafx.animation.AnimationTimer;
+
+import model.Countdown;
 
 public class Court {
 
@@ -18,6 +21,10 @@ public class Court {
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
+    
+    private Countdown cd;
+
+    private boolean isEnd = false;
  
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
@@ -25,8 +32,11 @@ public class Court {
         this.height = height;
         this.playerA=playerA;
         this.playerB=playerB;
+        cd = new Countdown(3, 0);
         playMusic();
         reset();
+      
+        
     }
 
     public void playMusic(){
@@ -66,6 +76,14 @@ public class Court {
     public RacketController getPlayerB(){
         return playerB;
     }
+    
+    public Countdown getCd(){
+        return cd;
+    }
+
+     
+    public boolean isEnd() {return this.isEnd;}
+
 
     public int getScoreA() { return scoreA; }
 
@@ -92,7 +110,6 @@ public class Court {
         if (updateBalls(deltaT)) {
             scoreA = playerA.getScore();
             scoreB = playerB.getScore();
-            System.out.println(Ball.getNbBalls());
             if(balls.size() > 1) {
                 for (Ball b : balls) {
                     if (b.getHasScored()) {
@@ -158,10 +175,14 @@ public class Court {
 
 
     void reset(){
-        this.racketA = new Racket(playerA,this.height/2);
-        this.racketB = new Racket(playerB,this.height/2);
-        this.balls = new ArrayList<Ball>();
-        this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+        if (cd.isEnd()) {
+            this.isEnd = true;
+        } else {
+            this.racketA = new Racket(playerA,this.height/2);
+            this.racketB = new Racket(playerB,this.height/2);
+            this.balls = new ArrayList<Ball>();
+            this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
+        }
     }
 
 

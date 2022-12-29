@@ -32,7 +32,7 @@ public class Court {
         this.playerA=playerA;
         this.playerB=playerB;
 
-        cd = new Countdown(0, 10);
+        cd = new Countdown(3, 0);
         reset();
       
         

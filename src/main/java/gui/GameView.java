@@ -56,6 +56,7 @@ public class GameView {
 
         racketB.setX(court.getWidth() * scale + xMargin);
         racketB.setY(court.getRacketB().getRacketPos() * scale);
+    
 
         balls = new ArrayList<Circle>();
         for (int i = 0; i < court.getBalls().size(); i++) {
@@ -118,7 +119,6 @@ public class GameView {
                     balls.add(new Circle());
                     balls.get(balls.size()-1).setRadius(court.getBalls().get(balls.size()-1).getBallRadius());
                     balls.get(balls.size()-1).setFill(Color.BLACK);
-
                     balls.get(balls.size()-1).setCenterX(court.getBalls().get(balls.size()-1).getBallX() * scale + xMargin);
                     balls.get(balls.size()-1).setCenterY(court.getBalls().get(balls.size()-1).getBallY() * scale);
                     gameObjects.getChildren().add(balls.get(balls.size()-1));

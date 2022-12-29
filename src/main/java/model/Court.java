@@ -10,7 +10,8 @@ import model.Countdown;
 
 public class Court {
 
-    private Sound sound = new Sound();
+    private Sound soundEffect = new Sound(); // permettra de jouer des effets sonores
+    private Sound music = new Sound(); // permettra de jouer de la musique en continu
 
     // instance parameters
     private RacketController playerA, playerB;
@@ -31,17 +32,21 @@ public class Court {
         this.height = height;
         this.playerA=playerA;
         this.playerB=playerB;
-
         cd = new Countdown(3, 0);
+        playMusic();
         reset();
       
         
     }
 
+    public void playMusic(){
+        this.music.setFile(3);
+        this.music.loop();
+    }
 
     public void playSFX(int i){
-        this.sound.setFile(i);
-        this.sound.play();
+        this.soundEffect.setFile(i);
+        this.soundEffect.play();
     }
    
     public double getWidth() {

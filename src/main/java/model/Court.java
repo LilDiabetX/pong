@@ -9,6 +9,7 @@ public class Court {
 
     private Sound soundEffect = new Sound(); // permettra de jouer des effets sonores
     private Sound music = new Sound(); // permettra de jouer de la musique en continu
+    private DoubleScore doubleScore = new DoubleScore(this, 0);
 
     // instance parameters
     private RacketController playerA, playerB;
@@ -27,6 +28,10 @@ public class Court {
         this.playerB=playerB;
         playMusic();
         reset();
+    }
+
+    public DoubleScore getDoubleScore(){
+        return doubleScore;
     }
 
     public void playMusic(){
@@ -141,12 +146,14 @@ public class Court {
             playSFX(1);
 
         } else if (nextBallX < 0) {
-            playerB.incrementScore();
+            if(doubleScore.getIsActivated()) { playerB.doubleIncrementScore(); } 
+            else { playerB.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
             return true;
         } else if (nextBallX > width) {
-            playerA.incrementScore();
+            if(doubleScore.getIsActivated()) { playerA.doubleIncrementScore(); } 
+            else { playerA.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
             return true;

@@ -44,10 +44,11 @@ public class GameView {
         racketA = new Rectangle();
         racketA.setHeight(court.getRacketA().getRacketSize() * scale);
         racketA.setWidth(racketThickness);
-        racketA.setFill(Color.BLACK);
+        racketA.setFill(Color.BLACK); 
 
         racketA.setX(xMargin - racketThickness);
         racketA.setY(court.getRacketA().getRacketPos() * scale);
+
 
         racketB = new Rectangle();
         racketB.setHeight(court.getRacketB().getRacketSize() * scale);

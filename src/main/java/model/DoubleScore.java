@@ -1,5 +1,6 @@
 package model;
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DoubleScore extends PowerUp{
     
@@ -11,18 +12,17 @@ public class DoubleScore extends PowerUp{
 
     @Override
     public void applyEffect() {
+        playSFX();
         court.setDoubleScore(true);
         timer.schedule( 
 			new TimerTask() {
 				@Override
 				public void run() {
                     court.setDoubleScore(false);
+                    playSFX();
 				}	
-            }, 30000 );   
+            }, 15000 );   
         
 
-    }
-
-    
-    
+    }   
 }

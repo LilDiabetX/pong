@@ -1,21 +1,28 @@
 package model;
+import java.util.*;
 
 public class DoubleScore extends PowerUp{
-    boolean isActivated;
+    
+    private Timer timer = new Timer();
 
     public DoubleScore(Court court, double radius) {
         super(court, radius);
-        isActivated = false;
     }
 
     @Override
     public void applyEffect() {
-        isActivated = !isActivated;   
+        court.setDoubleScore(true);
+        timer.schedule( 
+			new TimerTask() {
+				@Override
+				public void run() {
+                    court.setDoubleScore(false);
+				}	
+            }, 30000 );   
+        
+
     }
 
-    public boolean getIsActivated(){
-        return isActivated;
-    }
-
+    
     
 }

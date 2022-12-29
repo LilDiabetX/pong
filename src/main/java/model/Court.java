@@ -1,5 +1,7 @@
 package model;
 import java.time.chrono.ThaiBuddhistChronology;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.ArrayList;
 
 import gui.GameView;
@@ -9,7 +11,7 @@ public class Court {
 
     private Sound soundEffect = new Sound(); // permettra de jouer des effets sonores
     private Sound music = new Sound(); // permettra de jouer de la musique en continu
-    private DoubleScore doubleScore = new DoubleScore(this, 0);
+    
 
     // instance parameters
     private RacketController playerA, playerB;
@@ -19,7 +21,7 @@ public class Court {
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
- 
+    private boolean doubleScore = false;
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
@@ -30,8 +32,8 @@ public class Court {
         reset();
     }
 
-    public DoubleScore getDoubleScore(){
-        return doubleScore;
+    public void setDoubleScore(boolean b){
+        doubleScore = b;
     }
 
     public void playMusic(){
@@ -76,8 +78,10 @@ public class Court {
 
     public int getScoreB() { return scoreB; }
 
-    public void update(double deltaT) {
+      
+    
 
+    public void update(double deltaT) {
         Racket[] racketTab = {racketA, racketB};
         for (Racket racket : racketTab) {
             switch (racket.getPlayer().getState()) {
@@ -146,13 +150,13 @@ public class Court {
             playSFX(1);
 
         } else if (nextBallX < 0) {
-            if(doubleScore.getIsActivated()) { playerB.doubleIncrementScore(); } 
+            if(doubleScore) { playerB.doubleIncrementScore(); } 
             else { playerB.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
             return true;
         } else if (nextBallX > width) {
-            if(doubleScore.getIsActivated()) { playerA.doubleIncrementScore(); } 
+            if(doubleScore) { playerA.doubleIncrementScore(); } 
             else { playerA.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
@@ -164,7 +168,7 @@ public class Court {
     }
 
 
-    void reset(){
+    void reset(){// TODO Auto-generated method stub
         this.racketA = new Racket(playerA,this.height/2);
         this.racketB = new Racket(playerB,this.height/2);
         this.balls = new ArrayList<Ball>();

@@ -58,7 +58,7 @@ public final class PowerUpManager implements Disposable {
     }
 
     public void dispose() {
-        if (currPowerUpBody != null) {
+        if (currPowerUpBody != null && currPowerUp != null) {
             currPowerUp.dispose();
             currPowerUp = null;
         }

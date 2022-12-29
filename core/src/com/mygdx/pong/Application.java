@@ -48,7 +48,7 @@ public class Application extends Game {
 	
 	@Override
 	public void dispose () {
-		super.dispose();							// L’ordre est important
+		super.dispose();		// L’ordre est important
 		batch.dispose();
 		shapeBatch.dispose();
 		input.dispose();

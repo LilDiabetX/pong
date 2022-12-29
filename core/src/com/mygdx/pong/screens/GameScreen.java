@@ -12,8 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.managers.BallsManager;
+import com.mygdx.pong.managers.GameScreenManager;
 import com.mygdx.pong.managers.InputManager.Player;
 import com.mygdx.pong.managers.PowerUpManager;
+import com.mygdx.pong.managers.GameScreenManager.State;
 import com.mygdx.pong.models.Ball;
 import com.mygdx.pong.models.PowerUp;
 import com.mygdx.pong.models.Racket;
@@ -50,7 +52,6 @@ public class GameScreen extends AbstractScreen {
      * Un objet permettant d’afficher les formes des corps Box2D (associés aux sprites) à l’écran
      */
     Box2DDebugRenderer b2dr;
-    BitmapFont font;
 
     boolean isPaused = false;
 
@@ -70,8 +71,15 @@ public class GameScreen extends AbstractScreen {
      */
     Racket racketA, racketB;
 
+    private final int scoreMax = 5;
+
+    private int scoreJ1 = 0;
+    private int scoreJ2 = 0;
+
     private final BallsManager ballsManager = BallsManager.getInstance(app);
     private final PowerUpManager powerUpManager = PowerUpManager.getInstance(app, ballsManager);
+
+    private BitmapFont scoreFont;
 
     //Body ball;
     private final boolean IS_TUTORIAL = false;
@@ -83,9 +91,13 @@ public class GameScreen extends AbstractScreen {
     private final float RAY_DISTANCE = 8f;
 
     private boolean nextDirectionRight = true;
-    public GameScreen(final Application app) {
+
+    private GameScreenManager gsm;
+    
+    public GameScreen(final Application app, GameScreenManager gsm) {
         super(app);
-        musique.setLooping(musique.play(1.0f), true);
+        this.gsm = gsm;
+        //musique.setLooping(musique.play(1.0f), true);
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
         this.camera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);                // Définit la taille de la caméra
         this.b2dr = new Box2DDebugRenderer();
@@ -93,10 +105,11 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void show() {
+        musique.setLooping(musique.play(1.0f), true);
         world = new World(gravity, true);                                                       // Crée un monde physique Box2D
         powerUpManager.setWorld(world);
 
-        setupBitMapFont();
+        scoreFont = setupBitMapFont("fonts/Prototype.ttf", 100, Color.WHITE, 0.5f);
 
         // Contrôle les collisions entre les corps Box2D du monde physique
         world.setContactListener(new ContactListener() {
@@ -128,10 +141,21 @@ public class GameScreen extends AbstractScreen {
                                 // Si la balle est dans le but de la raquette A
                                 point.play(1.0f);
                                 racketB.addScore();
+                                scoreJ2++;
                             } else {
                                 // Si la balle est dans le but de la raquette B
                                 point.play(1.0f);
                                 racketA.addScore();
+                                scoreJ1++;
+                            }
+                            if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
+                                gsm.put(State.END, new EndScreen(app, gsm, scoreJ1, scoreJ2));
+                                gsm.setScreen(State.END);
+                                musique.dispose();
+                                choc.dispose();
+                                point.dispose();
+                                //ballsManager.dispose();
+                                //powerUpManager.dispose();
                             }
                         }
                     }
@@ -350,8 +374,8 @@ public class GameScreen extends AbstractScreen {
         }
 
         app.batch.begin();
-        font.draw(app.batch, String.format("%d", racketA.getScore()), Application.V_WIDTH / 2f - 150, Application.V_HEIGHT - 50);
-        font.draw(app.batch, String.format("%d", racketB.getScore()), Application.V_WIDTH / 2f + 150, Application.V_HEIGHT - 50);
+        scoreFont.draw(app.batch, String.format("%d", scoreJ1), Application.V_WIDTH / 2f - 150, Application.V_HEIGHT - 50);
+        scoreFont.draw(app.batch, String.format("%d", scoreJ2), Application.V_WIDTH / 2f + 150, Application.V_HEIGHT - 50);
         app.batch.end();
 
 
@@ -390,14 +414,7 @@ public class GameScreen extends AbstractScreen {
         isPaused = !isPaused;
     }
 
-    public void setupBitMapFont() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Prototype.ttf"));
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-        parameter.size = 100;
-        parameter.color = new Color(255, 255, 255, 0.5f);
-        font = generator.generateFont(parameter);
-        generator.dispose();
-    }
+    
     private void initArena() {
         createWalls();
 

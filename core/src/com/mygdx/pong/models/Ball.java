@@ -79,6 +79,9 @@ public class Ball implements Disposable {
     }
 
     public void dispose() {
-        body.getWorld().destroyBody(body);
+        if (body != null) {
+            body.getWorld().destroyBody(body);
+        }
     }
+       
 }

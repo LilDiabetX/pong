@@ -67,11 +67,6 @@ package model;
 
 	            public void run() {
 					
-	                second--;
-					ddSecond =dFormat.format(second);
-					ddMinute= dFormat.format(minute);
-					
-				
 	                if (minute==0 && second==0) {
 	                    isEnd=true;
 						timer.cancel();
@@ -84,6 +79,10 @@ package model;
 						ddSecond =dFormat.format(second);
 						ddMinute= dFormat.format(minute);
 					}
+
+					second--;
+					ddSecond =dFormat.format(second);
+					ddMinute= dFormat.format(minute);
 	            }
 	        }, 0, 1000);
 				

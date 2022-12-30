@@ -6,6 +6,7 @@ public interface RacketController {
     State getState();
     int getScore();
     void incrementScore();
+    void doubleIncrementScore();
     boolean inverted = false;
     void setInverted(boolean b);
     boolean getInverted();

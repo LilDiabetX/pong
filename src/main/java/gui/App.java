@@ -23,6 +23,8 @@ public class App extends Application {
             @Override
             public void incrementScore() { score++; }
             @Override
+            public void doubleIncrementScore() { score +=2; }
+            @Override
             public void setInverted(boolean b){ inverted = b; }
             @Override
             public boolean getInverted() { return inverted; }

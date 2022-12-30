@@ -12,6 +12,7 @@ public class Court {
 
     private Sound soundEffect = new Sound(); // permettra de jouer des effets sonores
     private Sound music = new Sound(); // permettra de jouer de la musique en continu
+    
 
     // instance parameters
     private RacketController playerA, playerB;
@@ -21,11 +22,7 @@ public class Court {
     private Racket racketA, racketB;
 
     private int scoreA, scoreB;
-    
-    private Countdown cd;
-
-    private boolean isEnd = false;
- 
+    private boolean doubleScore = false;
 
     public Court(RacketController playerA, RacketController playerB, double width, double height){
         this.width = width;
@@ -37,6 +34,10 @@ public class Court {
         reset();
       
         
+    }
+
+    public void setDoubleScore(boolean b){
+        doubleScore = b;
     }
 
     public void playMusic(){
@@ -89,8 +90,10 @@ public class Court {
 
     public int getScoreB() { return scoreB; }
 
-    public void update(double deltaT) {
+      
+    
 
+    public void update(double deltaT) {
         Racket[] racketTab = {racketA, racketB};
         for (Racket racket : racketTab) {
             switch (racket.getPlayer().getState()) {
@@ -169,13 +172,16 @@ public class Court {
             nextBallX = ball.getBallX() + deltaT * ball.getBallSpeedX();
             ball.invertLastHitBy();
             playSFX(1);
-        } else if (nextBallX < 0) { //si le joueur de gauche rate
-            playerB.incrementScore();
+
+        } else if (nextBallX < 0) {
+            if(doubleScore) { playerB.doubleIncrementScore(); } 
+            else { playerB.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
             return true;
-        } else if (nextBallX > width) {//si le joueur de droite rate
-            playerA.incrementScore();
+        } else if (nextBallX > width) {
+            if(doubleScore) { playerA.doubleIncrementScore(); } 
+            else { playerA.incrementScore(); }
             ball.setHasScored(true);
             playSFX(0);
             return true;
@@ -186,15 +192,11 @@ public class Court {
     }
 
 
-    void reset(){
-        if (cd.isEnd()) {
-            this.isEnd = true;
-        } else {
-            this.racketA = new Racket(playerA,this.height/2);
-            this.racketB = new Racket(playerB,this.height/2);
-            this.balls = new ArrayList<Ball>();
-            this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
-        }
+    void reset(){// TODO Auto-generated method stub
+        this.racketA = new Racket(playerA,this.height/2);
+        this.racketB = new Racket(playerB,this.height/2);
+        this.balls = new ArrayList<Ball>();
+        this.balls.add(new Ball(this.width/2,this.height/2,275.0,275.0, racketA, racketB));
     }
 
 

@@ -71,13 +71,13 @@ public class GameScreen extends AbstractScreen {
      */
     Racket racketA, racketB;
 
-    private final int scoreMax = 5;
+    private final int scoreMax = 2;
 
     private int scoreJ1 = 0;
     private int scoreJ2 = 0;
 
-    private final BallsManager ballsManager = BallsManager.getInstance(app);
-    private final PowerUpManager powerUpManager = PowerUpManager.getInstance(app, ballsManager);
+    private final BallsManager ballsManager; 
+    private final PowerUpManager powerUpManager; 
 
     private BitmapFont scoreFont;
 
@@ -96,8 +96,9 @@ public class GameScreen extends AbstractScreen {
     
     public GameScreen(final Application app, GameScreenManager gsm) {
         super(app);
+        this.ballsManager = BallsManager.getInstance(app);
+        this.powerUpManager = PowerUpManager.getInstance(app, ballsManager);
         this.gsm = gsm;
-        //musique.setLooping(musique.play(1.0f), true);
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
         this.camera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);                // Définit la taille de la caméra
         this.b2dr = new Box2DDebugRenderer();
@@ -105,7 +106,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void show() {
-        musique.setLooping(musique.play(1.0f), true);
+        //musique.setLooping(musique.play(1.0f), true);
         world = new World(gravity, true);                                                       // Crée un monde physique Box2D
         powerUpManager.setWorld(world);
 
@@ -149,13 +150,16 @@ public class GameScreen extends AbstractScreen {
                                 scoreJ1++;
                             }
                             if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
+                                stage.dispose();
+                                choc.dispose();
+                                //musique.dispose();
+                                point.dispose();
+                                ballsManager.dispose();
+                                powerUpManager.dispose();
+                                
                                 gsm.put(State.END, new EndScreen(app, gsm, scoreJ1, scoreJ2));
                                 gsm.setScreen(State.END);
-                                musique.dispose();
-                                choc.dispose();
-                                point.dispose();
-                                //ballsManager.dispose();
-                                //powerUpManager.dispose();
+                                
                             }
                         }
                     }
@@ -406,8 +410,11 @@ public class GameScreen extends AbstractScreen {
         super.dispose();
         ballsManager.dispose();
         powerUpManager.dispose();
-        world.dispose();                                                             // Détruit le monde physique Box2D
-        b2dr.dispose();                                                              // Détruit le renderer Box2D
+        if (world != null) {
+            world.dispose();                                                       // Détruit le monde physique Box2D
+        
+        }
+        b2dr.dispose();                                                         // Détruit le renderer Box2D
     }
 
     public void switchPause() {

@@ -80,7 +80,7 @@ public class Ball implements Disposable {
 
     public void dispose() {
         if (body != null) {
-            body.getWorld().destroyBody(body);
+            body = null;
         }
     }
        

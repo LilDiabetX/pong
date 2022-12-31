@@ -35,7 +35,7 @@ public abstract class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.stage.dispose();
+        
     }
 
     public BitmapFont setupBitMapFont(String internalPath, int size, Color color, float a) {

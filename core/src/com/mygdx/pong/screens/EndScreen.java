@@ -102,6 +102,7 @@ public class EndScreen extends AbstractScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                
                 gsm.put(State.PLAY, new GameScreen(app, gsm));
                 gsm.setScreen(State.PLAY);
             }
@@ -115,6 +116,7 @@ public class EndScreen extends AbstractScreen {
         homeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                
                 gsm.setScreen(State.MENU);
             }
         });
@@ -135,8 +137,7 @@ public class EndScreen extends AbstractScreen {
         
 
         Table buttonsTable = new Table();
-        //buttonsTable.add(playButton).padRight(Application.V_WIDTH/16);
-        buttonsTable.add(homeButton)/*.padLeft(Application.V_WIDTH/16)*/.padRight(Application.V_WIDTH/16);
+        buttonsTable.add(homeButton).padRight(Application.V_WIDTH/16);
         buttonsTable.add(quitButton).padLeft(Application.V_WIDTH/16);
         
         
@@ -154,7 +155,6 @@ public class EndScreen extends AbstractScreen {
 
         stage.addActor(groupe);
 
-        
     }
 
     @Override
@@ -167,25 +167,21 @@ public class EndScreen extends AbstractScreen {
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void update(float delta) {
-        // TODO Auto-generated method stub
         
     }
 
@@ -195,6 +191,14 @@ public class EndScreen extends AbstractScreen {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
     }
+
+    /*@Override
+    public void dispose() {
+        super.dispose();
+        gsm.dispose();
+        stage.dispose();
+
+    }*/
     
     
 }

@@ -49,6 +49,14 @@ public final class GameScreenManager implements Disposable {
         this.gameScreens.put(key, screen);
     }
 
+    public void remove(State key) {
+        this.gameScreens.remove(key);
+    }
+
+    public boolean containsState(State key) {
+        return this.gameScreens.containsKey(key);
+    }
+
     public void setScreen(State nextScreen) {
         app.setScreen(this.gameScreens.get(nextScreen));
     }

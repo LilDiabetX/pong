@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class BallsManager implements Disposable {
     private static BallsManager manager;
     private World world;
-    private int ballsCount;
+    private int ballsCount;// = 0;
     private Ball[] balls;
     private ArrayList<Body> ballBodiesUnActive;
     private BallsManager(final Application app) {
@@ -41,6 +41,10 @@ public class BallsManager implements Disposable {
 
     public int getBallsCount() {
         return this.ballsCount;
+    }
+
+    public void resetBallsCount() {
+        this.ballsCount = 0;
     }
 
     public Ball[] getBalls() {

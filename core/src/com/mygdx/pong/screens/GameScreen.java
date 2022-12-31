@@ -97,6 +97,7 @@ public class GameScreen extends AbstractScreen {
     public GameScreen(final Application app, GameScreenManager gsm) {
         super(app);
         this.ballsManager = BallsManager.getInstance(app);
+        this.ballsManager.resetBallsCount();
         this.powerUpManager = PowerUpManager.getInstance(app, ballsManager);
         this.gsm = gsm;
         this.camera = new OrthographicCamera();                                                         // Crée une caméra orthographique
@@ -157,9 +158,12 @@ public class GameScreen extends AbstractScreen {
                                 ballsManager.dispose();
                                 powerUpManager.dispose();
                                 
+                                if (gsm.containsState(State.END)) {
+                                    gsm.remove(State.END);
+                                }
                                 gsm.put(State.END, new EndScreen(app, gsm, scoreJ1, scoreJ2));
                                 gsm.setScreen(State.END);
-                                
+                                gsm.remove(State.PLAY);
                             }
                         }
                     }
@@ -178,10 +182,13 @@ public class GameScreen extends AbstractScreen {
                         // Position aléatoire à laquelle la balle va apparaître suite à une sortie de la balle
                         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
                         if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
-                                fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {                   // avec l’une des buts
+                                fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {    // avec l’une des buts
+                            System.out.println(ballsManager.getBallsCount());
                             if (ballsManager.getBallsCount() == 1) {
+                                System.out.println("on fait réapparaître la balle");
                                 moveBodyTaskList.add(new MoveBodyTask(ball.getBody(), camera.viewportWidth / 2 / PPM, randomY / PPM));
                             } else if (ballsManager.getBallsCount() > 1) {
+                                System.out.println("on enlève la balle");
                                 ballsManager.removeBall(ball);
                             }
                         }

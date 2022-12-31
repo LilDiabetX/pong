@@ -64,7 +64,9 @@ public class HomeScreen extends AbstractScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //gsm.put(State.PLAY, new GameScreen(app, gsm));
                 gsm.setScreen(State.PLAY);
+
             }
         });
 

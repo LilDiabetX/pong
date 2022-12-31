@@ -102,7 +102,7 @@ public class EndScreen extends AbstractScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                
+                gsm.remove(State.PLAY);
                 gsm.put(State.PLAY, new GameScreen(app, gsm));
                 gsm.setScreen(State.PLAY);
             }
@@ -116,7 +116,7 @@ public class EndScreen extends AbstractScreen {
         homeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                
+                gsm.put(State.PLAY, new GameScreen(app, gsm));
                 gsm.setScreen(State.MENU);
             }
         });

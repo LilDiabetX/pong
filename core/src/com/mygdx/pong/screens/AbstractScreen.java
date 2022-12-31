@@ -35,7 +35,7 @@ public abstract class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
-        
+        //Quoi que je mette ici, ça provoquait une erreur quand je quitte le jeu, donc pour l'instant rien ici
     }
 
     public BitmapFont setupBitMapFont(String internalPath, int size, Color color, float a) {

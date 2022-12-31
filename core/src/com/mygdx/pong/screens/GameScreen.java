@@ -106,7 +106,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void show() {
-        //musique.setLooping(musique.play(1.0f), true);
+        musique.setLooping(musique.play(1.0f), true);
         world = new World(gravity, true);                                                       // Crée un monde physique Box2D
         powerUpManager.setWorld(world);
 
@@ -152,7 +152,7 @@ public class GameScreen extends AbstractScreen {
                             if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
                                 stage.dispose();
                                 choc.dispose();
-                                //musique.dispose();
+                                musique.dispose();
                                 point.dispose();
                                 ballsManager.dispose();
                                 powerUpManager.dispose();

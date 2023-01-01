@@ -87,7 +87,8 @@ public abstract class PowerUp extends RandomEvent implements Disposable {
     }
 
     public void dispose() {
-        getBody().getWorld().destroyBody(getBody());
+        //getBody().getWorld().destroyBody(getBody());
+        
         timer.cancel();
     }
 }

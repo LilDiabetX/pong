@@ -71,7 +71,7 @@ public class GameScreen extends AbstractScreen {
      */
     Racket racketA, racketB;
 
-    private final int scoreMax = 2;
+    private final int scoreMax = 5;
 
     private int scoreJ1 = 0;
     private int scoreJ2 = 0;
@@ -152,11 +152,17 @@ public class GameScreen extends AbstractScreen {
                             }
                             if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
                                 stage.dispose();
+                                System.out.println("on a dispose le stage");
                                 choc.dispose();
+                                System.out.println("on a dispose le choc");
                                 musique.dispose();
+                                System.out.println("on a dispose le musique");
                                 point.dispose();
+                                System.out.println("on a dispose le point");
                                 ballsManager.dispose();
+                                System.out.println("on a dispose le ballsManager");
                                 powerUpManager.dispose();
+                                System.out.println("on a dispose le powerUpmanager");
                                 
                                 if (gsm.containsState(State.END)) {
                                     gsm.remove(State.END);

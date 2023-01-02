@@ -416,12 +416,15 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void hide() {
-
+        powerUpManager.setCurrPowerUpBodyNull();
+        powerUpManager.setCurrPowerUpNull();
     }
 
     @Override
     public void dispose() {
         super.dispose();
+        powerUpManager.setCurrPowerUpBodyNull();
+        powerUpManager.setCurrPowerUpNull();
         ballsManager.dispose();
         powerUpManager.dispose();
         if (world != null) {

@@ -68,6 +68,13 @@ public final class PowerUpManager implements Disposable {
         return currPowerUp;
     }
 
+    public void setCurrPowerUpNull() {
+        currPowerUp = null;
+    }
+    public void setCurrPowerUpBodyNull() {
+        currPowerUpBody = null;
+    }
+
     public void setWorld(World world) {
         this.world = world;
     }

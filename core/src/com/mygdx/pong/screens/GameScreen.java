@@ -210,6 +210,7 @@ public class GameScreen extends AbstractScreen {
                         if (powerUpManager.getCurrPowerUp() != null &&
                                 (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
                             // Collision de la balle avec le power-up
+                            System.out.println("ah bah là on active le power-up");
                             powerUpManager.setPowerUpBodyActive(world, false);
                             powerUpManager.getCurrPowerUp().setBall(ball);
                             powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();

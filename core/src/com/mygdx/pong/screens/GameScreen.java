@@ -76,11 +76,6 @@ public class GameScreen extends AbstractScreen {
      */
     private final int scoreMax = 11;
 
-    /**
-     * le score d'un joueur
-     */
-    private int scoreJ1, scoreJ2 = 0;
-
     private final BallsManager ballsManager; 
     private final PowerUpManager powerUpManager; 
 
@@ -148,15 +143,13 @@ public class GameScreen extends AbstractScreen {
                                 // Si la balle est dans le but de la raquette A
                                 point.play(1.0f);
                                 racketB.addScore();
-                                scoreJ2++;
                             } else {
                                 // Si la balle est dans le but de la raquette B
                                 point.play(1.0f);
                                 racketA.addScore();
-                                scoreJ1++;
                             }
                             //si le score max est atteint
-                            if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
+                            if (racketA.getScore() >= scoreMax || racketB.getScore() >= scoreMax) {
                                 stage.dispose();
                                 choc.dispose();
                                 musique.dispose();
@@ -167,7 +160,7 @@ public class GameScreen extends AbstractScreen {
                                 if (gsm.containsState(State.END)) {
                                     gsm.remove(State.END);
                                 }
-                                gsm.put(State.END, new EndScreen(app, gsm, scoreJ1, scoreJ2));
+                                gsm.put(State.END, new EndScreen(app, gsm, racketA.getScore(), racketB.getScore()));
                                 gsm.setScreen(State.END);
                                 gsm.remove(State.PLAY);
                             }
@@ -388,8 +381,8 @@ public class GameScreen extends AbstractScreen {
         }
 
         app.batch.begin();
-        scoreFont.draw(app.batch, String.format("%d", scoreJ1), Application.V_WIDTH / 2f - 150, Application.V_HEIGHT - 50);
-        scoreFont.draw(app.batch, String.format("%d", scoreJ2), Application.V_WIDTH / 2f + 150, Application.V_HEIGHT - 50);
+        scoreFont.draw(app.batch, String.format("%d", racketA.getScore()), Application.V_WIDTH / 2f - 150, Application.V_HEIGHT - 50);
+        scoreFont.draw(app.batch, String.format("%d", racketB.getScore()), Application.V_WIDTH / 2f + 150, Application.V_HEIGHT - 50);
         app.batch.end();
 
 
@@ -443,6 +436,9 @@ public class GameScreen extends AbstractScreen {
         // Initialise les raquettes
         racketA = new Racket(world, camera, app.input.getPlayerA());
         racketB = new Racket(world, camera, app.input.getPlayerB());
+
+        racketA.resetScore();
+        racketB.resetScore();
 
         racketA.setOpponent(racketB);
         racketB.setOpponent(racketA);

@@ -71,10 +71,15 @@ public class GameScreen extends AbstractScreen {
      */
     Racket racketA, racketB;
 
+    /**
+     * le score à atteindre pour gagner la partie
+     */
     private final int scoreMax = 5;
 
-    private int scoreJ1 = 0;
-    private int scoreJ2 = 0;
+    /**
+     * le score d'un joueur
+     */
+    private int scoreJ1, scoreJ2 = 0;
 
     private final BallsManager ballsManager; 
     private final PowerUpManager powerUpManager; 
@@ -150,19 +155,14 @@ public class GameScreen extends AbstractScreen {
                                 racketA.addScore();
                                 scoreJ1++;
                             }
+                            //si le score max est atteint
                             if (scoreJ1 >= scoreMax || scoreJ2 >= scoreMax) {
                                 stage.dispose();
-                                System.out.println("on a dispose le stage");
                                 choc.dispose();
-                                System.out.println("on a dispose le choc");
                                 musique.dispose();
-                                System.out.println("on a dispose le musique");
                                 point.dispose();
-                                System.out.println("on a dispose le point");
                                 ballsManager.dispose();
-                                System.out.println("on a dispose le ballsManager");
                                 powerUpManager.dispose();
-                                System.out.println("on a dispose le powerUpmanager");
                                 
                                 if (gsm.containsState(State.END)) {
                                     gsm.remove(State.END);
@@ -189,12 +189,9 @@ public class GameScreen extends AbstractScreen {
                         float randomY = MathUtils.random(BALL_SPAWN_OFFSET, camera.viewportHeight - BALL_SPAWN_OFFSET);
                         if ((fa.getBody() == racketA.getGoalBody() || fb.getBody() == racketA.getGoalBody() ||
                                 fa.getBody() == racketB.getGoalBody() || fb.getBody() == racketB.getGoalBody())) {    // avec l’une des buts
-                            System.out.println(ballsManager.getBallsCount());
                             if (ballsManager.getBallsCount() == 1) {
-                                System.out.println("on fait réapparaître la balle");
                                 moveBodyTaskList.add(new MoveBodyTask(ball.getBody(), camera.viewportWidth / 2 / PPM, randomY / PPM));
                             } else if (ballsManager.getBallsCount() > 1) {
-                                System.out.println("on enlève la balle");
                                 ballsManager.removeBall(ball);
                             }
                         }
@@ -210,7 +207,6 @@ public class GameScreen extends AbstractScreen {
                         if (powerUpManager.getCurrPowerUp() != null &&
                                 (fa.getBody() == powerUpManager.getCurrPowerUp().getBody() || fb.getBody() == powerUpManager.getCurrPowerUp().getBody())) {
                             // Collision de la balle avec le power-up
-                            System.out.println("ah bah là on active le power-up");
                             powerUpManager.setPowerUpBodyActive(world, false);
                             powerUpManager.getCurrPowerUp().setBall(ball);
                             powerUpManager.getCurrPowerUp().ApplyAndRemoveEffect();

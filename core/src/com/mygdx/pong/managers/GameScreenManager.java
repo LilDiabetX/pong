@@ -38,6 +38,9 @@ public final class GameScreenManager implements Disposable {
         return manager;
     }
 
+    /**
+     * initialise les écrans du menu et du jeu
+     */
     private void initGameScreens() {
         this.gameScreens = new HashMap<State, AbstractScreen>();
         this.put(State.MENU, new HomeScreen(app, this));

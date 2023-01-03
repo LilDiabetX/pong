@@ -132,7 +132,6 @@ public final class PowerUpManager implements Disposable {
 
     private void addPowerUp(POWER_UPS powerUpType) {
         Vector2 randomPos = new Vector2(app.V_WIDTH / 3 + (float) Math.random() * app.V_WIDTH / 3, MathUtils.clamp((float) Math.random() * app.V_HEIGHT, 100, app.V_HEIGHT - 100));
-        System.out.println("PowerUp: " + powerUpType);
         switch (powerUpType) {
             case PADDLE_KEY_INVERSION:
                 currPowerUp = new PaddleKeyInversion(randomPos.scl(1 / PPM), 100, Color.RED);

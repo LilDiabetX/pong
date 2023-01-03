@@ -65,6 +65,7 @@ public class EndScreen extends AbstractScreen {
         this.scoreJ1 = scoreJ1;
         this.scoreJ2 = scoreJ2;
 
+
         if (scoreJ1 > scoreJ2) {
             this.gagnant = "Player 1";
         } else if (scoreJ1 < scoreJ2) {
@@ -82,11 +83,13 @@ public class EndScreen extends AbstractScreen {
         labelFont = setupBitMapFont("fonts/Prototype.ttf", 80, Color.WHITE, 1);
         Gdx.input.setInputProcessor(stage);
 
+        //on crée l'affichage du score
         LabelStyle styleScore = new LabelStyle(scoreFont, Color.WHITE);
         Label score_1 = new Label(scoreJ1+"", styleScore);
         Label score_2 = new Label(scoreJ2+"", styleScore);
 
 
+        //on écrit le nom du gagnant dans le message
         LabelStyle styleLabel = new LabelStyle(labelFont, Color.WHITE);
         if (gagnant != null) {
             message = new Label(gagnant+ " wins !", styleLabel);
@@ -94,6 +97,7 @@ public class EndScreen extends AbstractScreen {
             message = new Label("Draw", styleLabel);
         }
 
+        //on crée les boutons
         TextButton.TextButtonStyle styleReplay = new TextButton.TextButtonStyle();
         styleReplay.font = replayFont;
         styleReplay.fontColor = Color.WHITE;
@@ -129,17 +133,15 @@ public class EndScreen extends AbstractScreen {
             }
         });
 
+        //on ajoute tous les éléments à l'écran
+
         Table scoreTable = new Table();
         scoreTable.add(score_1).padRight(Application.V_WIDTH/4); 
         scoreTable.add(score_2).padLeft(Application.V_WIDTH/4);
 
-        
-        
-
         Table buttonsTable = new Table();
         buttonsTable.add(homeButton).padRight(Application.V_WIDTH/16);
         buttonsTable.add(quitButton).padLeft(Application.V_WIDTH/16);
-        
         
         VerticalGroup groupe = new VerticalGroup();
 
@@ -192,13 +194,7 @@ public class EndScreen extends AbstractScreen {
         camera.update();
     }
 
-    /*@Override
-    public void dispose() {
-        super.dispose();
-        gsm.dispose();
-        stage.dispose();
-
-    }*/
+    
     
     
 }

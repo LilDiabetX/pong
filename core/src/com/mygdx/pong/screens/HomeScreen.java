@@ -55,6 +55,7 @@ public class HomeScreen extends AbstractScreen {
 
         logo = new Image(new Texture("logopong.png"));
 
+        // on crée les boutons
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = buttonFont;
         style.fontColor = Color.WHITE;
@@ -64,7 +65,6 @@ public class HomeScreen extends AbstractScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //gsm.put(State.PLAY, new GameScreen(app, gsm));
                 gsm.setScreen(State.PLAY);
 
             }
@@ -78,6 +78,7 @@ public class HomeScreen extends AbstractScreen {
             }
         });
         
+        //on ajoute les boutons à l'écran
         VerticalGroup groupe = new VerticalGroup();
 
         groupe.setOrigin(groupe.getWidth()/2, groupe.getHeight());
@@ -100,25 +101,25 @@ public class HomeScreen extends AbstractScreen {
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
+        // Pas utilisé
         
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
+        // Pas utilisé
         
     }
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
+        // Pas utilisé
         
     }
 
     @Override
     public void update(float delta) {
-        // TODO Auto-generated method stub
+        // Pas utilisé
         
     }
 

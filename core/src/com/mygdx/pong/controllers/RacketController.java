@@ -5,4 +5,6 @@ public interface RacketController {
     State getState();
     int getScore();
     void incrementScore();
+    void doublilyIncrementScore();
+    void resetScore();
 }

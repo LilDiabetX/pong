@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.models.PowerUp;
 import com.mygdx.pong.models.powerups.DoubleBall;
+import com.mygdx.pong.models.powerups.DoubleScore;
 import com.mygdx.pong.models.powerups.PaddleKeyInversion;
 import com.mygdx.pong.models.powerups.PaddleResize;
 import com.mygdx.pong.utils.B2DBodyBuilder;
@@ -29,11 +30,12 @@ public final class PowerUpManager implements Disposable {
         PADDLE_KEY_INVERSION,
         PADDLE_SIZE_INCREASE,
         PADDLE_SIZE_DECREASE,
-        BALL_DOUBLING
+        BALL_DOUBLING,
+        SCORE_DOUBLING
     }
     private final float POWER_UP_EVERY = 8.0f;
     private final float POWER_UP_DURATION = 10.0f;
-    private final float[] powerUpDistribution = {.1f, .2f, .2f, .2f, .3f};
+    private final float[] powerUpDistribution = {.0f, .0f, .0f, .0f, .0f, 1f};
     private float powerUpTimer = 0.0f;
     private boolean isPowerUpInScreen = false;
     private PowerUp currPowerUp = null;
@@ -144,6 +146,9 @@ public final class PowerUpManager implements Disposable {
                 break;
             case BALL_DOUBLING:
                 currPowerUp = new DoubleBall(ballsManager, randomPos.scl(1 / PPM), 100, Color.BLUE);
+                break;
+            case SCORE_DOUBLING:
+                currPowerUp = new DoubleScore(randomPos.scl(1 / PPM), 100, Color.YELLOW);
                 break;
             default:
                 currPowerUp = null;

@@ -20,6 +20,7 @@ public class Racket {
     private float racketSpeed = 600.0f; // m/s
     private Vector2 prevPosition = Vector2.Zero;
     private boolean isInverted = false;
+    private boolean doubleScore = false;
 
     public Racket(World world, Camera camera, RacketController player){
         this.world = world;
@@ -75,6 +76,10 @@ public class Racket {
         this.racketSpeed = racketSpeed;
     }
 
+    public void setDoubleScore(boolean doubleScore) {
+        this.doubleScore = doubleScore;
+    }
+
     public void setPlayerBody(Body playerBody) {
         this.playerBody = playerBody;
     }
@@ -90,8 +95,17 @@ public class Racket {
         this.opponent = opponent;
     }
 
+    public void resetScore() {
+        this.player.resetScore();
+    }
+
     public void addScore() {
-        player.incrementScore();
+        if (doubleScore) {
+            player.doublilyIncrementScore();
+        }
+        else {
+            player.incrementScore();
+        }
     }
 
     public void flipIsInverted() {

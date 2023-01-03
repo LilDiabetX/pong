@@ -15,6 +15,8 @@ public final class InputManager implements Disposable {
         public State getState() { return state; }
         public int getScore() { return score; }
         public void incrementScore() { score++; }
+        public void doublilyIncrementScore() { score += 2; }
+        public void resetScore() { score = 0; }
 
     }
     private static InputManager manager = null;

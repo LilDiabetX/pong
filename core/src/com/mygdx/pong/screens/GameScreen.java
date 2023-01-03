@@ -74,7 +74,7 @@ public class GameScreen extends AbstractScreen {
     /**
      * le score à atteindre pour gagner la partie
      */
-    private final int scoreMax = 5;
+    private final int scoreMax = 11;
 
     /**
      * le score d'un joueur

@@ -43,6 +43,10 @@ public class BallsManager implements Disposable {
         return this.ballsCount;
     }
 
+    public void resetBallsCount() {
+        this.ballsCount = 0;
+    }
+
     public Ball[] getBalls() {
         return this.balls;
     }

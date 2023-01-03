@@ -58,7 +58,7 @@ public final class PowerUpManager implements Disposable {
     }
 
     public void dispose() {
-        if (currPowerUpBody != null) {
+        if (currPowerUpBody != null && currPowerUp != null) {
             currPowerUp.dispose();
             currPowerUp = null;
         }
@@ -66,6 +66,13 @@ public final class PowerUpManager implements Disposable {
 
     public PowerUp getCurrPowerUp() {
         return currPowerUp;
+    }
+
+    public void setCurrPowerUpNull() {
+        currPowerUp = null;
+    }
+    public void setCurrPowerUpBodyNull() {
+        currPowerUpBody = null;
     }
 
     public void setWorld(World world) {
@@ -125,7 +132,6 @@ public final class PowerUpManager implements Disposable {
 
     private void addPowerUp(POWER_UPS powerUpType) {
         Vector2 randomPos = new Vector2(app.V_WIDTH / 3 + (float) Math.random() * app.V_WIDTH / 3, MathUtils.clamp((float) Math.random() * app.V_HEIGHT, 100, app.V_HEIGHT - 100));
-        System.out.println("PowerUp: " + powerUpType);
         switch (powerUpType) {
             case PADDLE_KEY_INVERSION:
                 currPowerUp = new PaddleKeyInversion(randomPos.scl(1 / PPM), 100, Color.RED);

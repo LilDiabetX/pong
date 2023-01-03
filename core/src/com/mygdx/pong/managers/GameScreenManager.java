@@ -3,7 +3,9 @@ package com.mygdx.pong.managers;
 import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.pong.Application;
 import com.mygdx.pong.screens.AbstractScreen;
+import com.mygdx.pong.screens.EndScreen;
 import com.mygdx.pong.screens.GameScreen;
+import com.mygdx.pong.screens.HomeScreen;
 
 import java.util.HashMap;
 
@@ -14,7 +16,7 @@ public final class GameScreenManager implements Disposable {
     public enum State {
         MENU,
         PLAY,
-        SETTINGS
+        END
     }
 
     private GameScreenManager(final Application app) {
@@ -26,7 +28,7 @@ public final class GameScreenManager implements Disposable {
         }
         this.app = app;
         initGameScreens();
-        setScreen(State.PLAY);
+        setScreen(State.MENU);
     }
 
     public static GameScreenManager getInstance(final Application app) {
@@ -36,9 +38,26 @@ public final class GameScreenManager implements Disposable {
         return manager;
     }
 
+    /**
+     * initialise les écrans du menu et du jeu
+     */
     private void initGameScreens() {
         this.gameScreens = new HashMap<State, AbstractScreen>();
-        this.gameScreens.put(State.PLAY, new GameScreen(app));
+        this.put(State.MENU, new HomeScreen(app, this));
+        this.put(State.PLAY, new GameScreen(app, this));
+        
+    }
+
+    public void put(State key, AbstractScreen screen) {
+        this.gameScreens.put(key, screen);
+    }
+
+    public void remove(State key) {
+        this.gameScreens.remove(key);
+    }
+
+    public boolean containsState(State key) {
+        return this.gameScreens.containsKey(key);
     }
 
     public void setScreen(State nextScreen) {

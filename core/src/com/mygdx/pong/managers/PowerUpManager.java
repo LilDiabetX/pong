@@ -35,7 +35,7 @@ public final class PowerUpManager implements Disposable {
     }
     private final float POWER_UP_EVERY = 8.0f;
     private final float POWER_UP_DURATION = 10.0f;
-    private final float[] powerUpDistribution = {.0f, .0f, .0f, .0f, .0f, 1f};
+    private final float[] powerUpDistribution = {.1f, .1f, .3f, .1f, .2f, 2f};
     private float powerUpTimer = 0.0f;
     private boolean isPowerUpInScreen = false;
     private PowerUp currPowerUp = null;

@@ -9,7 +9,6 @@ import com.mygdx.pong.models.Racket;
 
 public class DoubleScore extends PowerUp {
 
-    private Racket appliedTo;
     Sound bonus = Gdx.audio.newSound(Gdx.files.internal("Sounds/bonusPong.wav"));
 
     public DoubleScore(Vector2 position, float radius, Color color) {
@@ -19,13 +18,14 @@ public class DoubleScore extends PowerUp {
     @Override
     public void applyEffect() {
         bonus.play(1.0f);
-        appliedTo = getBall().getRacketHitBy();
-        appliedTo.setDoubleScore(true);
+        getBall().getRacketHitBy().setDoubleScore(true);
+        getBall().getRacketNextHitting().setDoubleScore(true);
     }
 
     @Override
     public void removeEffect() {
         bonus.play(1.0f);
-        appliedTo.setDoubleScore(false);
+        getBall().getRacketHitBy().setDoubleScore(false);
+        getBall().getRacketNextHitting().setDoubleScore(false);
     }
 }
